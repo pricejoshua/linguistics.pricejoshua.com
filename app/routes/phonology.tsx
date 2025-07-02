@@ -282,7 +282,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
                 <button
                   key={phone}
                   onClick={() => togglePhone(phone)}
-                  className={`p-3 rounded-lg text-center font-mono text-lg transition-colors ${
+                  className={`p-3 rounded-lg text-center font-sans text-lg transition-colors ${
                     isSelected 
                       ? `${selectedBg} text-white` 
                       : `${bgColor} text-gray-800 dark:text-gray-100`
