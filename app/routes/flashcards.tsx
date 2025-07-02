@@ -75,8 +75,33 @@ const defaultSets: FlashCardSet[] = [
   },
 ];
 
+const LOCAL_STORAGE_KEY_SETS = 'flashcardSets';
+const LOCAL_STORAGE_KEY_FAVS = 'flashcardFavorites';
+
 const FlashcardApp: React.FC = () => {
-  const [sets, setSets] = useState<FlashCardSet[]>(defaultSets);
+  // Load from localStorage if available
+  const [sets, setSets] = useState<FlashCardSet[]>(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY_SETS);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {}
+    }
+    return defaultSets;
+  });
+  const [favorites, setFavorites] = useState<{ [setName: string]: Set<number> }>(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY_FAVS);
+    if (saved) {
+      try {
+        const obj = JSON.parse(saved);
+        // Convert arrays to Set
+        const out: { [setName: string]: Set<number> } = {};
+        for (const k in obj) out[k] = new Set(obj[k]);
+        return out;
+      } catch {}
+    }
+    return {};
+  });
   const [currentSetIdx, setCurrentSetIdx] = useState(0);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -84,7 +109,6 @@ const FlashcardApp: React.FC = () => {
   const [cardAnim, setCardAnim] = useState<'none' | 'next' | 'prev'>('none');
   const [shuffleMode, setShuffleMode] = useState(false);
   const [favoritesMode, setFavoritesMode] = useState(false);
-  const [favorites, setFavorites] = useState<{ [setName: string]: Set<number> }>({});
   const [shuffledOrder, setShuffledOrder] = useState<number[]>([]);
   const prevSetIdx = useRef(currentSetIdx);
 
@@ -118,8 +142,8 @@ const FlashcardApp: React.FC = () => {
   const getActiveIndices = () => {
     let indices = shuffleMode ? shuffledOrder : Array.from({ length: currentSet.cards.length }, (_, i) => i);
     if (favoritesMode) {
-      const favs = favorites[currentSet.name] || new Set();
-      indices = indices.filter(i => favs.has(i));
+      const favs = favorites[currentSet.name] || new Set<number>();
+      indices = indices.filter((i: number) => favs.has(i));
     }
     return indices;
   };
@@ -200,6 +224,17 @@ const FlashcardApp: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentSet.cards.length, handleNext, handlePrev]);
+
+  // Save sets and favorites to localStorage on change
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY_SETS, JSON.stringify(sets));
+  }, [sets]);
+  useEffect(() => {
+    // Convert Set to Array for storage
+    const favObj: { [setName: string]: number[] } = {};
+    for (const k in favorites) favObj[k] = Array.from(favorites[k]);
+    localStorage.setItem(LOCAL_STORAGE_KEY_FAVS, JSON.stringify(favObj));
+  }, [favorites]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4">
