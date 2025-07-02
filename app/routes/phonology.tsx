@@ -168,29 +168,29 @@ const PhoneticsFeaturesApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Phonetics Feature Explorer</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Phonetics Feature Explorer</h1>
         
         {/* Controls */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search Phones</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Search Phones</label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
                   placeholder="Search phones..."
                 />
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Major Classes</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Major Classes</label>
               <select
                 value={selectedClass}
                 onChange={(e) => {
@@ -201,7 +201,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
                     clearSelection();
                   }
                 }}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
               >
                 <option value="">Select a class...</option>
                 {Object.keys(majorClasses).map(className => (
@@ -213,7 +213,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
             <div className="flex items-end space-x-2">
               <button
                 onClick={clearSelection}
-                className="flex items-center px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                className="flex items-center px-4 py-2 bg-gray-500 dark:bg-gray-700 text-white rounded-md hover:bg-gray-600 dark:hover:bg-gray-600 transition-colors"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Clear
@@ -223,7 +223,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
                 className={`flex items-center px-4 py-2 rounded-md transition-colors ${
                   showOnlySelected 
                     ? 'bg-blue-500 text-white hover:bg-blue-600' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700'
                 }`}
               >
                 <Filter className="h-4 w-4 mr-2" />
@@ -233,13 +233,13 @@ const PhoneticsFeaturesApp: React.FC = () => {
           </div>
           
           {selectedPhones.length > 0 && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-md">
-              <h3 className="font-medium text-blue-900 mb-2">
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-md">
+              <h3 className="font-medium text-blue-900 dark:text-blue-200 mb-2">
                 Selected Phones ({selectedPhones.length}):
               </h3>
               <div className="flex flex-wrap gap-2 mb-3">
                 {selectedPhones.map(phone => (
-                  <span key={phone} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                  <span key={phone} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 rounded-full text-sm">
                     {phone}
                   </span>
                 ))}
@@ -247,7 +247,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
               
               {Object.keys(commonFeatures).length > 0 && (
                 <div>
-                  <h4 className="font-medium text-blue-900 mb-2">Common Features:</h4>
+                  <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Common Features:</h4>
                   <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                     {Object.entries(commonFeatures).map(([feature, value]) => (
                       <div key={feature} className="text-sm">
@@ -262,8 +262,8 @@ const PhoneticsFeaturesApp: React.FC = () => {
         </div>
 
         {/* Phone Grid */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Phones {showOnlySelected ? '(Selected)' : '(All)'}
           </h2>
           
@@ -271,12 +271,12 @@ const PhoneticsFeaturesApp: React.FC = () => {
             {displayPhones.map(phone => {
               const isSelected = selectedPhones.includes(phone);
               const category = getPhoneCategory(phone);
-              const bgColor = category === 'vowel' ? 'bg-red-100 hover:bg-red-200' : 
-                             category === 'sonorant' ? 'bg-yellow-100 hover:bg-yellow-200' : 
-                             'bg-blue-100 hover:bg-blue-200';
-              const selectedBg = category === 'vowel' ? 'bg-red-500' : 
-                               category === 'sonorant' ? 'bg-yellow-500' : 
-                               'bg-blue-500';
+              const bgColor = category === 'vowel' ? 'bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800' : 
+                             category === 'sonorant' ? 'bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800' : 
+                             'bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800';
+              const selectedBg = category === 'vowel' ? 'bg-red-500 dark:bg-red-700' : 
+                               category === 'sonorant' ? 'bg-yellow-500 dark:bg-yellow-700' : 
+                               'bg-blue-500 dark:bg-blue-700';
               
               return (
                 <button
@@ -285,7 +285,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
                   className={`p-3 rounded-lg text-center font-mono text-lg transition-colors ${
                     isSelected 
                       ? `${selectedBg} text-white` 
-                      : `${bgColor} text-gray-800`
+                      : `${bgColor} text-gray-800 dark:text-gray-100`
                   }`}
                   title={`${phone} - Click to ${isSelected ? 'deselect' : 'select'}`}
                 >
@@ -296,17 +296,17 @@ const PhoneticsFeaturesApp: React.FC = () => {
           </div>
 
           {/* Legend */}
-          <div className="flex justify-center space-x-6 text-sm text-gray-600">
+          <div className="flex justify-center space-x-6 text-sm text-gray-600 dark:text-gray-300">
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-red-100 rounded mr-2"></div>
+              <div className="w-4 h-4 bg-red-100 dark:bg-red-900 rounded mr-2"></div>
               Vowels
             </div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-yellow-100 rounded mr-2"></div>
+              <div className="w-4 h-4 bg-yellow-100 dark:bg-yellow-900 rounded mr-2"></div>
               Sonorants
             </div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-blue-100 rounded mr-2"></div>
+              <div className="w-4 h-4 bg-blue-100 dark:bg-blue-900 rounded mr-2"></div>
               Obstruents
             </div>
           </div>
@@ -314,15 +314,15 @@ const PhoneticsFeaturesApp: React.FC = () => {
 
         {/* Feature Details */}
         {selectedPhones.length > 0 && (
-          <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Feature Matrix</h2>
+          <div className="mt-6 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Feature Matrix</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-3 py-2 text-left font-medium text-gray-900">Phone</th>
+                  <tr className="bg-gray-50 dark:bg-gray-800">
+                    <th className="px-3 py-2 text-left font-medium text-gray-900 dark:text-gray-100">Phone</th>
                     {features.map(feature => (
-                      <th key={feature} className="px-3 py-2 text-center font-medium text-gray-900 min-w-[80px]">
+                      <th key={feature} className="px-3 py-2 text-center font-medium text-gray-900 dark:text-gray-100 min-w-[80px]">
                         {feature}
                       </th>
                     ))}
@@ -330,14 +330,14 @@ const PhoneticsFeaturesApp: React.FC = () => {
                 </thead>
                 <tbody>
                   {selectedPhones.map(phone => (
-                    <tr key={phone} className="border-t">
+                    <tr key={phone} className="border-t border-gray-200 dark:border-gray-700">
                       <td className="px-3 py-2 font-mono font-bold text-lg">{phone}</td>
                       {features.map(feature => {
                         const value = phoneData[phone][feature];
                         const isCommon = commonFeatures[feature] === value;
                         return (
                           <td key={feature} className={`px-3 py-2 text-center font-mono ${
-                            isCommon ? 'bg-green-100 font-bold' : ''
+                            isCommon ? 'bg-green-100 dark:bg-green-900 font-bold' : ''
                           }`}>
                             {value || '—'}
                           </td>
@@ -348,7 +348,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               Green highlighting indicates common features across selected phones.
             </p>
           </div>
