@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, RefreshCw } from 'lucide-react';
+import { extractPhonesFromHtml } from '../utils/parser';
 
 // Types for feature values and phone data
 // A feature value is either '+' | '-' | undefined (for missing features)
@@ -116,6 +117,9 @@ const PhoneticsFeaturesApp: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState<MajorClassName | ''>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showOnlySelected, setShowOnlySelected] = useState<boolean>(false);
+  const [importedConsonants, setImportedConsonants] = useState<string[] | null>(null);
+  const [importedVowels, setImportedVowels] = useState<string[] | null>(null);
+  const [limitToImported, setLimitToImported] = useState(false);
 
   // Function parameter types
   const togglePhone = (phone: string) => {
@@ -154,9 +158,46 @@ const PhoneticsFeaturesApp: React.FC = () => {
     return common;
   }, [selectedPhones]);
 
-  const filteredPhones = Object.keys(phoneData).filter(phone => 
-    phone.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Handle consonant file import
+  const handleImportConsonants = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const phones = extractPhonesFromHtml(text);
+    setImportedConsonants(phones);
+  };
+  // Handle vowel file import
+  const handleImportVowels = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const phones = extractPhonesFromHtml(text);
+    setImportedVowels(phones);
+  };
+  const handleDone = () => {
+    setLimitToImported(true);
+    setShowOnlySelected(false);
+    setSelectedPhones([]);
+    setSelectedClass('');
+  };
+  const handleClearImport = () => {
+    setImportedConsonants(null);
+    setImportedVowels(null);
+    setLimitToImported(false);
+    setShowOnlySelected(false);
+  };
+
+  const DEBUG_LIMIT_IMPORT = false; // set to true to enable limiting to imported phones
+
+  // Filtered phones logic
+  const filteredPhones = Object.keys(phoneData).filter(phone => {
+    if (DEBUG_LIMIT_IMPORT && limitToImported && importedConsonants && importedVowels) {
+      return (
+        importedConsonants.includes(phone) || importedVowels.includes(phone)
+      ) && phone.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+    return phone.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const displayPhones = showOnlySelected ? selectedPhones : filteredPhones;
 
@@ -172,6 +213,36 @@ const PhoneticsFeaturesApp: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Phonetics Feature Explorer</h1>
         
+        {/* Import controls */}
+        <div className="flex gap-4 mb-6">
+          <label className="flex flex-col items-center cursor-pointer">
+            <span className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors mb-1">Import Consonants (PA HTML)</span>
+            <input type="file" accept=".html,.htm" className="hidden" onChange={handleImportConsonants} />
+            {importedConsonants && <span className="text-xs text-green-700 mt-1">Consonants loaded</span>}
+          </label>
+          <label className="flex flex-col items-center cursor-pointer">
+            <span className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors mb-1">Import Vowels (PA HTML)</span>
+            <input type="file" accept=".html,.htm" className="hidden" onChange={handleImportVowels} />
+            {importedVowels && <span className="text-xs text-green-700 mt-1">Vowels loaded</span>}
+          </label>
+          {importedConsonants && importedVowels && !limitToImported && (
+            <button
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+              onClick={handleDone}
+            >
+              Done
+            </button>
+          )}
+          {(importedConsonants || importedVowels) && (
+            <button
+              className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition-colors"
+              onClick={handleClearImport}
+            >
+              Clear Import
+            </button>
+          )}
+        </div>
+
         {/* Controls */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
