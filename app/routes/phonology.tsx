@@ -175,6 +175,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
     setImportedVowels(phones);
   };
   const handleDone = () => {
+    console.log('Done importing:', { importedConsonants, importedVowels });
     setLimitToImported(true);
     setShowOnlySelected(false);
     setSelectedPhones([]);
@@ -185,6 +186,9 @@ const PhoneticsFeaturesApp: React.FC = () => {
     setImportedVowels(null);
     setLimitToImported(false);
     setShowOnlySelected(false);
+    setSelectedPhones([]);
+    setSelectedClass('');
+    setSearchTerm('');
   };
 
   const DEBUG_LIMIT_IMPORT = false; // set to true to enable limiting to imported phones
@@ -217,12 +221,24 @@ const PhoneticsFeaturesApp: React.FC = () => {
         <div className="flex gap-4 mb-6">
           <label className="flex flex-col items-center cursor-pointer">
             <span className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors mb-1">Import Consonants (PA HTML)</span>
-            <input type="file" accept=".html,.htm" className="hidden" onChange={handleImportConsonants} />
+            <input
+              key={importedConsonants ? importedConsonants.join(',') : 'empty'}
+              type="file"
+              accept=".html,.htm"
+              className="hidden"
+              onChange={handleImportConsonants}
+            />
             {importedConsonants && <span className="text-xs text-green-700 mt-1">Consonants loaded</span>}
           </label>
           <label className="flex flex-col items-center cursor-pointer">
             <span className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors mb-1">Import Vowels (PA HTML)</span>
-            <input type="file" accept=".html,.htm" className="hidden" onChange={handleImportVowels} />
+            <input
+              key={importedVowels ? importedVowels.join(',') : 'empty'}
+              type="file"
+              accept=".html,.htm"
+              className="hidden"
+              onChange={handleImportVowels}
+            />
             {importedVowels && <span className="text-xs text-green-700 mt-1">Vowels loaded</span>}
           </label>
           {importedConsonants && importedVowels && !limitToImported && (

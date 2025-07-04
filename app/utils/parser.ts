@@ -4,10 +4,11 @@ export function extractPhonesFromHtml(html: string): string[] {
     const doc = parser.parseFromString(html, "text/html");
     const phones: string[] = [];
 
-    // Assume phones are in <td> elements within a chart/table
+    // Only extract <span lang=...> inside <td> (IPA phones)
     const tdElements = doc.querySelectorAll("table tr td");
     tdElements.forEach(td => {
-        const text = td.textContent?.trim();
+        const span = td.querySelector('span[lang]');
+        const text = span?.textContent?.trim();
         if (text && text.length > 0 && !phones.includes(text)) {
             phones.push(text);
         }
