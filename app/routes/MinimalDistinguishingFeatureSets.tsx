@@ -42,7 +42,7 @@ function MinimalDistinguishingFeatureSets({
   });
 
   // Try all pairs and triples of features
-  const minimalSets: { features: string[]; values: any[] }[] = [];
+  let minimalSets: { features: string[]; values: any[] }[] = [];
   for (let k = 2; k <= 3; ++k) {
     getCombinations(Object.keys(featureValues), k).forEach((combo) => {
       const values = combo.map((f) => featureValues[f]);
@@ -61,28 +61,32 @@ function MinimalDistinguishingFeatureSets({
     if (minimalSets.length > 0) break; // Prefer smallest sets
   }
 
-  if (minimalSets.length === 0) return (
+  // Only surface the most general (smallest) set
+  let bestSet = null;
+  if (minimalSets.length > 0) {
+    // Sort by number of features, then alphabetically for consistency
+    minimalSets.sort((a, b) => a.features.length - b.features.length || a.features.join().localeCompare(b.features.join()));
+    bestSet = minimalSets[0];
+  }
+
+  if (!bestSet) return (
     <div className="mb-3">
-      <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Minimal Distinguishing Feature Sets</h4>
-      <div className="text-sm text-gray-600 dark:text-gray-300">No minimal feature sets found (try selecting a different set).</div>
+      <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Minimal Distinguishing Feature Set</h4>
+      <div className="text-sm text-gray-600 dark:text-gray-300">No minimal feature set found (try selecting a different set).</div>
     </div>
   );
 
   return (
     <div className="mb-3">
-      <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Minimal Distinguishing Feature Sets</h4>
-      <div className="space-y-1">
-        {minimalSets.map((set, i) => (
-          <div key={i} className="text-sm font-mono">
-            {set.features.map((f, j) => (
-              <span key={f}>
-                <span className="font-medium">{f}</span>: {String(set.values[j])}{j < set.features.length - 1 ? ', ' : ''}
-              </span>
-            ))}
-          </div>
+      <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Minimal Distinguishing Feature Set</h4>
+      <div className="text-sm font-mono">
+        {bestSet.features.map((f, j) => (
+          <span key={f}>
+            <span className="font-medium">{f}</span>: {String(bestSet.values[j])}{j < bestSet.features.length - 1 ? ', ' : ''}
+          </span>
         ))}
       </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">These are the smallest sets of features that together uniquely distinguish the selected phones from the rest of the imported set.</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This is the smallest set of features that together uniquely distinguish the selected phones from the rest of the imported set.</p>
     </div>
   );
 }

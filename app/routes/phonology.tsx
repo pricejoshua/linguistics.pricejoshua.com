@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, RefreshCw } from 'lucide-react';
 import { extractPhonesFromHtml } from '../utils/parser';
 import MinimalDistinguishingFeatureSets from './MinimalDistinguishingFeatureSets';
@@ -294,6 +294,25 @@ const PhoneticsFeaturesApp: React.FC = () => {
     return 'obstruent';
   };
 
+  // Persist imported phones to localStorage
+  useEffect(() => {
+    if (importedConsonants || importedVowels) {
+      localStorage.setItem('importedConsonants', JSON.stringify(importedConsonants || []));
+      localStorage.setItem('importedVowels', JSON.stringify(importedVowels || []));
+    } else {
+      localStorage.removeItem('importedConsonants');
+      localStorage.removeItem('importedVowels');
+    }
+  }, [importedConsonants, importedVowels]);
+
+  // Restore imported phones from localStorage on mount
+  useEffect(() => {
+    const savedConsonants = localStorage.getItem('importedConsonants');
+    const savedVowels = localStorage.getItem('importedVowels');
+    if (savedConsonants) setImportedConsonants(JSON.parse(savedConsonants));
+    if (savedVowels) setImportedVowels(JSON.parse(savedVowels));
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
       <div className="max-w-7xl mx-auto">
@@ -443,7 +462,7 @@ const PhoneticsFeaturesApp: React.FC = () => {
               {(importedConsonants || importedVowels) && selectedPhones.length > 0 && (
                 <MinimalDistinguishingFeatureSets
                   selectedPhones={selectedPhones}
-                  validImportedPhones={validImportedPhones}
+                  validImportedPhones={validImportedPhones || []}
                   phoneData={phoneData}
                   features={features}
                   limitToImported={limitToImported}
