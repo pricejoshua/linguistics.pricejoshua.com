@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, RefreshCw } from 'lucide-react';
 import { extractPhonesFromHtml } from '../utils/parser';
+import MinimalDistinguishingFeatureSets from './MinimalDistinguishingFeatureSets';
 
 // Types for feature values and phone data
 // A feature value is either '+' | '-' | undefined (for missing features)
@@ -132,7 +133,13 @@ const PhoneticsFeaturesApp: React.FC = () => {
 
   const selectMajorClass = (className: MajorClassName) => {
     const classFeatures = majorClasses[className];
-    const matchingPhones = Object.keys(phoneData).filter(phone => {
+    let phonePool: string[];
+    if (limitToImported && validImportedPhones && validImportedPhones.length > 0) {
+      phonePool = validImportedPhones;
+    } else {
+      phonePool = Object.keys(phoneData);
+    }
+    const matchingPhones = phonePool.filter(phone => {
       return Object.entries(classFeatures).every(([feature, value]) => 
         phoneData[phone][feature] === value
       );
@@ -157,6 +164,77 @@ const PhoneticsFeaturesApp: React.FC = () => {
     });
     return common;
   }, [selectedPhones]);
+
+  // Helper: get the set of imported phones that exist in phoneData
+  const validImportedPhones = useMemo(() => {
+    if (!importedConsonants && !importedVowels) return null;
+    const all = [
+      ...(importedConsonants || []),
+      ...(importedVowels || [])
+    ];
+    return all.filter(p => phoneData[p]);
+  }, [importedConsonants, importedVowels]);
+
+  // Compute distinctive features for selected phones vs. complement set
+  const distinctiveFeatures = useMemo(() => {
+    if (!validImportedPhones) return {};
+    if (selectedPhones.length === 0) return {};
+    // The set of all imported phones (filtered to those in phoneData)
+    const importedPhones = validImportedPhones;
+    // If not limiting to imported, use all phones
+    const universe = (limitToImported && importedPhones.length > 0)
+      ? importedPhones
+      : Object.keys(phoneData);
+    // Complement set: all phones in universe not selected
+    const complement = universe.filter(p => !selectedPhones.includes(p));
+    // For each feature, check if all selected share a value, and all complement do not
+    const result: Record<string, FeatureValue> = {};
+    features.forEach(feature => {
+      const selVals = selectedPhones.map(p => phoneData[p]?.[feature]).filter(v => v);
+      if (selVals.length !== selectedPhones.length) return; // skip if missing
+      const selVal = selVals[0];
+      if (!selVal) return;
+      if (!selVals.every(v => v === selVal)) return;
+      // Now check complement
+      if (complement.length === 0) return;
+      const compVals = complement.map(p => phoneData[p]?.[feature]).filter(v => v);
+      // If all complement phones have a value, and none match selVal, it's distinctive
+      if (compVals.length === complement.length && !compVals.includes(selVal)) {
+        result[feature] = selVal;
+      }
+    });
+    return result;
+  }, [selectedPhones, validImportedPhones, limitToImported]);
+
+  // Find minimal distinguishing feature sets
+  const minimalFeatureCombos = useMemo(() => {
+    if (selectedPhones.length === 0 || Object.keys(distinctiveFeatures).length === 0) return [];
+    const featureKeys = Object.keys(distinctiveFeatures);
+    const combos: Set<string>[] = [];
+    // Start with individual features
+    featureKeys.forEach(key => {
+      const value = distinctiveFeatures[key];
+      if (value) {
+        combos.push(new Set([`${key}:${value}`]));
+      }
+    });
+    // Combine features to find minimal sets
+    for (let i = 0; i < featureKeys.length; i++) {
+      for (let j = i + 1; j < featureKeys.length; j++) {
+        const combo = new Set([`${featureKeys[i]}:${distinctiveFeatures[featureKeys[i]]}`, `${featureKeys[j]}:${distinctiveFeatures[featureKeys[j]]}`]);
+        if (!combos.some(c => [...c].every(f => combo.has(f)))) {
+          combos.push(combo);
+        }
+      }
+    }
+    // Filter out non-minimal combos
+    const minimalCombos = combos.filter(combo => {
+      return !combos.some(other => 
+        other !== combo && [...combo].every(f => other.has(f))
+      );
+    });
+    return minimalCombos;
+  }, [selectedPhones, distinctiveFeatures]);
 
   // Handle consonant file import
   const handleImportConsonants = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,19 +272,23 @@ const PhoneticsFeaturesApp: React.FC = () => {
   const DEBUG_LIMIT_IMPORT = false; // set to true to enable limiting to imported phones
 
   // Filtered phones logic
-  const filteredPhones = Object.keys(phoneData).filter(phone => {
-    if (DEBUG_LIMIT_IMPORT && limitToImported && importedConsonants && importedVowels) {
-      return (
-        importedConsonants.includes(phone) || importedVowels.includes(phone)
-      ) && phone.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredPhones = useMemo(() => {
+    let basePhones: string[];
+    if (limitToImported && validImportedPhones && validImportedPhones.length > 0) {
+      basePhones = validImportedPhones;
+    } else {
+      basePhones = Object.keys(phoneData);
     }
-    return phone.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+    return basePhones.filter(phone =>
+      phone.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [limitToImported, validImportedPhones, searchTerm]);
 
   const displayPhones = showOnlySelected ? selectedPhones : filteredPhones;
 
   const getPhoneCategory = (phone: string): 'vowel' | 'sonorant' | 'obstruent' => {
     const data = phoneData[phone];
+    if (!data) return 'obstruent'; // fallback for safety
     if (data.syllabic === '+') return 'vowel';
     if (data.sonorant === '+') return 'sonorant';
     return 'obstruent';
@@ -331,9 +413,8 @@ const PhoneticsFeaturesApp: React.FC = () => {
                   </span>
                 ))}
               </div>
-              
               {Object.keys(commonFeatures).length > 0 && (
-                <div>
+                <div className="mb-3">
                   <h4 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Common Features:</h4>
                   <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                     {Object.entries(commonFeatures).map(([feature, value]) => (
@@ -343,6 +424,30 @@ const PhoneticsFeaturesApp: React.FC = () => {
                     ))}
                   </div>
                 </div>
+              )}
+              {/* Distinctive Features Section (moved here) */}
+              {(importedConsonants || importedVowels) && Object.keys(distinctiveFeatures).length > 0 && (
+                <div className="mb-3">
+                  <h4 className="font-medium text-green-900 dark:text-green-200 mb-2">Distinctive Features (vs. imported set):</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {Object.entries(distinctiveFeatures).map(([feature, value]) => (
+                      <div key={feature} className="text-sm font-mono">
+                        <span className="font-medium">{feature}:</span> {value}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">These features distinguish the selected phones from all other imported phones.</p>
+                </div>
+              )}
+              {/* Minimal Distinguishing Feature Sets Section */}
+              {(importedConsonants || importedVowels) && selectedPhones.length > 0 && (
+                <MinimalDistinguishingFeatureSets
+                  selectedPhones={selectedPhones}
+                  validImportedPhones={validImportedPhones}
+                  phoneData={phoneData}
+                  features={features}
+                  limitToImported={limitToImported}
+                />
               )}
             </div>
           )}
