@@ -3,8 +3,8 @@ import Landing from "~/pages/landing";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Linguistics Apps" },
+    { name: "description", content: "Landing Page" },
   ];
 }
 
