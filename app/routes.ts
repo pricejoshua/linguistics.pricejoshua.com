@@ -4,4 +4,5 @@ export default [
   index("routes/home.tsx"),
   route("phonology", "routes/phonology.tsx"),
   route("flashcards", "routes/flashcards.tsx"),
+  route("anki", "routes/anki.tsx"),
 ] satisfies RouteConfig;
