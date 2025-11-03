@@ -18,7 +18,6 @@ export default function Anki() {
     }}>
       <div style={{
         width: "100%",
-        maxWidth: "850px",
         aspectRatio: "850/450",
         border: "1px solid #e0e0e0",
         borderRadius: "8px",
