@@ -14,11 +14,13 @@ export default function Anki() {
       justifyContent: "center",
       alignItems: "center",
       padding: "20px",
-      minHeight: "calc(100vh - 40px)"
+      height: "100vh",
+      boxSizing: "border-box"
     }}>
       <div style={{
         width: "100%",
-        height: "100%",
+        maxWidth: "1200px",
+        height: "calc(100vh - 40px)",
         border: "1px solid #e0e0e0",
         borderRadius: "4px",
         overflow: "hidden"
