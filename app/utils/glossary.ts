@@ -3,7 +3,7 @@ import type { GlossaryEntry, GlossaryIndexEntry } from '~/types/glossary';
 import indexData from '~/data/glossary/index.json';
 
 const entryModules = import.meta.glob<{ default: GlossaryEntry }>(
-  '~/data/glossary/entries/*.json',
+  '../data/glossary/entries/*.json',
   { eager: true }
 );
 
