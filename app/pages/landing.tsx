@@ -3,8 +3,8 @@ import { Link } from "react-router";
 const pages = [
   { path: "/", label: "Home" },
   { path: "/phonology", label: "Phonology Helper" },
-  { path: "/anki", label: "Anki GPA Flashcard Helpers"}
-  // Add more pages here as needed
+  { path: "/anki", label: "Anki GPA Flashcard Helpers" },
+  { path: "/glossary", label: "Linguistics Glossary" },
 ];
 
 export default function Landing() {
