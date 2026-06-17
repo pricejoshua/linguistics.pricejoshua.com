@@ -57,9 +57,9 @@ Categories (initial set): `grammatical-relations`, `semantic-roles`, `predicatio
           "segments": [
             { "form": "the", "gloss": "DEF" }
           ],
-          "grammaticalRoles": ["determiner"],
-          "semanticRoles": [],
-          "predicationRoles": []
+          "roles": {
+            "Grammatical": ["determiner"]
+          }
         },
         {
           "id": "m2",
@@ -67,9 +67,11 @@ Categories (initial set): `grammatical-relations`, `semantic-roles`, `predicatio
           "segments": [
             { "form": "man", "gloss": "man" }
           ],
-          "grammaticalRoles": ["subject", "NP-head"],
-          "semanticRoles": ["theme"],
-          "predicationRoles": ["subject-of-predication"]
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["theme"],
+            "Predication": ["subject-of-predication"]
+          }
         },
         {
           "id": "m3",
@@ -77,9 +79,10 @@ Categories (initial set): `grammatical-relations`, `semantic-roles`, `predicatio
           "segments": [
             { "form": "is", "gloss": "COP.PRS.3SG" }
           ],
-          "grammaticalRoles": ["copula"],
-          "semanticRoles": [],
-          "predicationRoles": ["copula"]
+          "roles": {
+            "Grammatical": ["copula"],
+            "Predication": ["copula"]
+          }
         },
         {
           "id": "m4",
@@ -87,9 +90,11 @@ Categories (initial set): `grammatical-relations`, `semantic-roles`, `predicatio
           "segments": [
             { "form": "tall", "gloss": "tall" }
           ],
-          "grammaticalRoles": ["predicate", "adjective"],
-          "semanticRoles": ["property"],
-          "predicationRoles": ["predicate"]
+          "roles": {
+            "Grammatical": ["predicate", "adjective"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
         }
       ]
     }
@@ -101,7 +106,7 @@ Categories (initial set): `grammatical-relations`, `semantic-roles`, `predicatio
 
 - **`definition`** uses `[term:slug]` syntax for inline cross-references, parsed at render time into interactive tooltip spans.
 - **`segments`** is the morpheme array. A single uninflected word has one segment; an inflected form like "walked" has `[{form:"walk",gloss:"walk"},{form:"ed",gloss:"PST"}]`. Glosses use Leipzig Glossing Rules abbreviations (capitalized for grammatical categories, lowercase for lexical content).
-- **`grammaticalRoles`**, **`semanticRoles`**, and **`predicationRoles`** are all arrays — a word can simultaneously hold multiple roles across all three dimensions.
+- **`roles`** is a free-form object mapping category name → string array. The panel renders whatever keys are present, skipping empty arrays. Adding a new category (e.g. `"Information Structure"`) requires no component changes — just add the key to the JSON. Categories with no values for a given morpheme are simply omitted.
 - **`relatedTerms`** are slugs; used to resolve tooltips and "related entries" links.
 
 ---
@@ -165,12 +170,12 @@ Panel content:
 ─────────────────────────────
 Morpheme breakdown:  man [man]
 
-Grammatical roles:   subject · NP-head
-Semantic roles:      theme
-Predication roles:   subject-of-predication
+Grammatical:         subject · NP-head
+Semantic:            theme
+Predication:         subject-of-predication
 ```
 
-Each role label is itself a `<TermLink>` — hovering shows a tooltip for that role's glossary entry if one exists.
+The panel iterates the `roles` object keys in order and renders each as a labeled section — no hardcoded category names. Categories absent from the morpheme's `roles` object are not shown. Each role label is itself a `<TermLink>` — hovering shows a tooltip for that role's glossary entry if one exists.
 
 Clicking a different word updates the panel in place. Clicking the same word again (or pressing Escape) closes the panel.
 
@@ -208,9 +213,7 @@ interface GlossaryMorpheme {
   id: string;
   surface: string;
   segments: GlossarySegment[];
-  grammaticalRoles: string[];
-  semanticRoles: string[];
-  predicationRoles: string[];
+  roles: Record<string, string[]>;
 }
 
 interface GlossaryExample {
