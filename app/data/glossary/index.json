@@ -1,0 +1,10 @@
+[
+  { "slug": "agent", "title": "Agent", "categories": ["semantic-roles"] },
+  { "slug": "copula", "title": "Copula", "categories": ["grammatical-relations", "predication"] },
+  { "slug": "patient", "title": "Patient", "categories": ["semantic-roles"] },
+  { "slug": "predicate", "title": "Predicate", "categories": ["grammatical-relations", "predication"] },
+  { "slug": "semantic-role", "title": "Semantic Role", "categories": ["semantic-roles"] },
+  { "slug": "subject", "title": "Subject", "categories": ["grammatical-relations"] },
+  { "slug": "theme", "title": "Theme", "categories": ["semantic-roles"] },
+  { "slug": "verbless-clause", "title": "Verbless Clause", "categories": ["predication"] }
+]

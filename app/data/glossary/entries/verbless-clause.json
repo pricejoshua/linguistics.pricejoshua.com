@@ -1,0 +1,38 @@
+{
+  "slug": "verbless-clause",
+  "title": "Verbless Clause",
+  "definition": "A clause in which the [term:predicate] is a noun phrase, adjective, or prepositional phrase with no overt verb. The [term:copula] may be absent. Verbless clauses are common in equational and attributive predication across many of the world's languages.",
+  "relatedTerms": ["predicate", "copula", "subject"],
+  "examples": [
+    {
+      "id": "vl-ex1",
+      "sourceLanguage": "English (constructed)",
+      "translation": "She a teacher.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "She",
+          "segments": [{ "form": "she", "gloss": "3SG.F.NOM" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Semantic": ["theme"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "a",
+          "segments": [{ "form": "a", "gloss": "INDEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m3", "surface": "teacher",
+          "segments": [{ "form": "teacher", "gloss": "teacher" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "theme",
+  "title": "Theme",
+  "definition": "The [term:semantic-role] assigned to a participant whose location or state is described, or that is moved without undergoing a change of state. Theme is often distinguished from [term:patient] by the absence of a change-of-state implication. In stative predicates the [term:subject] is typically a theme.",
+  "relatedTerms": ["semantic-role", "patient", "subject"],
+  "examples": [
+    {
+      "id": "th-ex1",
+      "sourceLanguage": "English",
+      "translation": "The book is on the table.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m2", "surface": "book",
+          "segments": [{ "form": "book", "gloss": "book" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["theme"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m3", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m4", "surface": "on",
+          "segments": [{ "form": "on", "gloss": "on" }],
+          "roles": { "Grammatical": ["preposition", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m5", "surface": "the",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m6", "surface": "table",
+          "segments": [{ "form": "table", "gloss": "table" }],
+          "roles": { "Grammatical": ["object-of-preposition", "NP-head"], "Semantic": ["location"] }
+        }
+      ]
+    }
+  ]
+}

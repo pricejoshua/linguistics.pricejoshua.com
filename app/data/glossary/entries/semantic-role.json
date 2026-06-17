@@ -1,0 +1,39 @@
+{
+  "slug": "semantic-role",
+  "title": "Semantic Role",
+  "definition": "The semantic relationship between a participant and the event or state described by the predicate. Common semantic roles include [term:agent], [term:patient], and [term:theme]. Semantic roles are distinct from grammatical relations: the [term:subject] of a passive clause is typically a [term:patient], not an [term:agent].",
+  "relatedTerms": ["agent", "patient", "theme", "subject"],
+  "examples": [
+    {
+      "id": "sr-ex1",
+      "sourceLanguage": "English",
+      "translation": "Maria opened the door.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "Maria",
+          "segments": [{ "form": "Maria", "gloss": "Maria" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["agent"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "opened",
+          "segments": [{ "form": "open", "gloss": "open" }, { "form": "ed", "gloss": "PST" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m3", "surface": "the",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m4", "surface": "door",
+          "segments": [{ "form": "door", "gloss": "door" }],
+          "roles": { "Grammatical": ["object", "NP-head"], "Semantic": ["patient"] }
+        }
+      ]
+    }
+  ]
+}

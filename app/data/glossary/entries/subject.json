@@ -1,0 +1,44 @@
+{
+  "slug": "subject",
+  "title": "Subject",
+  "definition": "The grammatical relation borne by the nominal constituent that the [term:predicate] makes an assertion about. Subjects typically control verb agreement, appear in nominative case in accusative languages, and are the default topic of a clause.",
+  "relatedTerms": ["predicate", "agent", "theme"],
+  "examples": [
+    {
+      "id": "subj-ex1",
+      "sourceLanguage": "English",
+      "translation": "The dog bit the man.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m2", "surface": "dog",
+          "segments": [{ "form": "dog", "gloss": "dog" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["agent"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m3", "surface": "bit",
+          "segments": [{ "form": "bite", "gloss": "bite" }, { "form": "PST", "gloss": "PST" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m4", "surface": "the",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m5", "surface": "man",
+          "segments": [{ "form": "man", "gloss": "man" }],
+          "roles": { "Grammatical": ["object", "NP-head"], "Semantic": ["patient"] }
+        }
+      ]
+    }
+  ]
+}

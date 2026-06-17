@@ -1,0 +1,68 @@
+{
+  "slug": "predicate",
+  "title": "Predicate",
+  "definition": "The part of a clause that makes an assertion about the [term:subject]. The predicate may be a verb phrase, noun phrase, adjective, or prepositional phrase. In [term:verbless-clause]s, there is no verbal predicate — the [term:copula] may be absent entirely.",
+  "relatedTerms": ["subject", "verbless-clause", "copula"],
+  "examples": [
+    {
+      "id": "pred-ex1",
+      "sourceLanguage": "English",
+      "translation": "The man is tall.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m2", "surface": "man",
+          "segments": [{ "form": "man", "gloss": "man" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["theme"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m3", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m4", "surface": "tall",
+          "segments": [{ "form": "tall", "gloss": "tall" }],
+          "roles": {
+            "Grammatical": ["predicate", "adjective"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pred-ex2",
+      "sourceLanguage": "English (verbless)",
+      "translation": "He sick.",
+      "morphemes": [
+        {
+          "id": "m5", "surface": "He",
+          "segments": [{ "form": "he", "gloss": "3SG.M.NOM" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Semantic": ["theme"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m6", "surface": "sick",
+          "segments": [{ "form": "sick", "gloss": "sick" }],
+          "roles": {
+            "Grammatical": ["predicate", "adjective"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    }
+  ]
+}

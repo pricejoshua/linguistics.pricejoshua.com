@@ -1,0 +1,43 @@
+{
+  "slug": "copula",
+  "title": "Copula",
+  "definition": "A verb or particle that links the [term:subject] to a non-verbal [term:predicate]. In English the copula is a form of 'be'. In many languages the copula is absent in the present tense, producing a [term:verbless-clause].",
+  "relatedTerms": ["verbless-clause", "predicate", "subject"],
+  "examples": [
+    {
+      "id": "cop-ex1",
+      "sourceLanguage": "English",
+      "translation": "She is a teacher.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "She",
+          "segments": [{ "form": "she", "gloss": "3SG.F.NOM" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Semantic": ["theme"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m3", "surface": "a",
+          "segments": [{ "form": "a", "gloss": "INDEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m4", "surface": "teacher",
+          "segments": [{ "form": "teacher", "gloss": "teacher" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    }
+  ]
+}

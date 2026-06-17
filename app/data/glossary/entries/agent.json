@@ -1,0 +1,44 @@
+{
+  "slug": "agent",
+  "title": "Agent",
+  "definition": "The [term:semantic-role] assigned to a participant who volitionally initiates or controls the action described by the predicate. Agents are typically animate and intentional. The agent is often — but not always — the grammatical [term:subject].",
+  "relatedTerms": ["semantic-role", "patient", "subject"],
+  "examples": [
+    {
+      "id": "ag-ex1",
+      "sourceLanguage": "English",
+      "translation": "The cat chased the mouse.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m2", "surface": "cat",
+          "segments": [{ "form": "cat", "gloss": "cat" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["agent"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m3", "surface": "chased",
+          "segments": [{ "form": "chase", "gloss": "chase" }, { "form": "d", "gloss": "PST" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m4", "surface": "the",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m5", "surface": "mouse",
+          "segments": [{ "form": "mouse", "gloss": "mouse" }],
+          "roles": { "Grammatical": ["object", "NP-head"], "Semantic": ["patient"] }
+        }
+      ]
+    }
+  ]
+}

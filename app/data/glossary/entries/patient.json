@@ -1,0 +1,34 @@
+{
+  "slug": "patient",
+  "title": "Patient",
+  "definition": "The [term:semantic-role] assigned to a participant that undergoes a change of state or is directly affected by an action. The patient is often the grammatical object in a transitive clause but becomes the [term:subject] in passive constructions. Contrast with [term:agent] and [term:theme].",
+  "relatedTerms": ["semantic-role", "agent", "theme"],
+  "examples": [
+    {
+      "id": "pat-ex1",
+      "sourceLanguage": "English",
+      "translation": "The window broke.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m2", "surface": "window",
+          "segments": [{ "form": "window", "gloss": "window" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["patient"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m3", "surface": "broke",
+          "segments": [{ "form": "break", "gloss": "break" }, { "form": "PST", "gloss": "PST" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        }
+      ]
+    }
+  ]
+}
