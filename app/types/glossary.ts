@@ -10,11 +10,17 @@ export interface GlossaryMorpheme {
   roles: Record<string, string[]>;
 }
 
+export interface GlossaryConstituent {
+  label: string;
+  morphemeIds: string[];
+}
+
 export interface GlossaryExample {
   id: string;
   sourceLanguage: string;
   translation: string;
   morphemes: GlossaryMorpheme[];
+  constituents?: GlossaryConstituent[];
 }
 
 export interface GlossaryEntry {
