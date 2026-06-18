@@ -1,13 +1,18 @@
 {
   "slug": "copula",
   "title": "Copula",
-  "definition": "A verb or particle that links the [term:subject] to a non-verbal [term:predicate]. In English the copula is a form of 'be'. In many languages the copula is absent in the present tense, producing a [term:verbless-clause].",
-  "relatedTerms": ["verbless-clause", "predicate", "subject"],
+  "definition": "A verb or particle that links the [term:subject] to a non-verbal [term:predicate]. In English the copula is a form of 'be'. In many languages the copula is absent in the present tense, producing a [term:verbless-clause]. Crosslinguistically, copulas take several forms: (a) a full verb (Estonian on, Russian быть); (b) a verb present only in certain tense/aspect combinations; (c) an auxiliary; (d) an invariant particle (Mandarin shì, Turkish im-). Copular verbs tend to be highly irregular, 'semi-verbal' (lacking some verbal morphology), and often develop from demonstrative pronouns or perception verbs. They also frequently double as auxiliaries.",
+  "relatedTerms": ["verbless-clause", "predicate", "subject", "classification-predicate", "equative-predicate"],
   "examples": [
     {
       "id": "cop-ex1",
       "sourceLanguage": "English",
       "translation": "She is a teacher.",
+      "constituents": [
+        { "label": "CS",  "morphemeIds": ["m1"] },
+        { "label": "COP", "morphemeIds": ["m2"] },
+        { "label": "CC",  "morphemeIds": ["m3", "m4"] }
+      ],
       "morphemes": [
         {
           "id": "m1", "surface": "She",
@@ -34,6 +39,156 @@
           "roles": {
             "Grammatical": ["predicate", "NP-head"],
             "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cop-ex2",
+      "sourceLanguage": "Estonian",
+      "translation": "Jan on õpetaja. ('John is a teacher.')",
+      "notes": "Copula as full verb: on inflects for tense (on PRS vs. oli PST). The copula appears in all tenses.",
+      "constituents": [
+        { "label": "CS",  "morphemeIds": ["m5"] },
+        { "label": "COP", "morphemeIds": ["m6"] },
+        { "label": "CC",  "morphemeIds": ["m7"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m5", "surface": "Jan",
+          "segments": [{ "form": "Jan", "gloss": "Jan.NOM" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m6", "surface": "on",
+          "segments": [{ "form": "ole", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m7", "surface": "õpetaja",
+          "segments": [{ "form": "õpetaja", "gloss": "teacher.NOM" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cop-ex3",
+      "sourceLanguage": "Russian",
+      "translation": "Иван был учитель. ('John was a teacher.')",
+      "notes": "Copula present only in certain tenses: Russian has no copula in the present tense (verbless clause), but the past-tense form был appears. This is the 'tense-restricted' copula pattern.",
+      "constituents": [
+        { "label": "CS",  "morphemeIds": ["m8"] },
+        { "label": "COP", "morphemeIds": ["m9"] },
+        { "label": "CC",  "morphemeIds": ["m10"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m8", "surface": "Иван",
+          "segments": [{ "form": "Иван", "gloss": "Ivan.NOM.M" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m9", "surface": "был",
+          "segments": [{ "form": "быть", "gloss": "be" }, { "form": "PST.M", "gloss": "PST.M" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m10", "surface": "учитель",
+          "segments": [{ "form": "учитель", "gloss": "teacher.NOM.M" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cop-ex4",
+      "sourceLanguage": "Korean",
+      "translation": "나의 누나는 선생 였다。(na-ïi nuna-nïn sənsæŋ y-əss-ta) ('My elder sister was a teacher.')",
+      "notes": "Copula as auxiliary in certain tenses: the copula y- attaches to the predicate noun sənsæŋ 'teacher' only in past tense -əss-; in the present tense the noun stands alone (verbless clause).",
+      "constituents": [
+        { "label": "CS",  "morphemeIds": ["m11", "m12"] },
+        { "label": "CC",  "morphemeIds": ["m13"] },
+        { "label": "COP", "morphemeIds": ["m14"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m11", "surface": "나의",
+          "segments": [{ "form": "na", "gloss": "1SG" }, { "form": "ïi", "gloss": "GEN" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m12", "surface": "누나는",
+          "segments": [{ "form": "nuna", "gloss": "elder.sister" }, { "form": "nïn", "gloss": "TOP" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m13", "surface": "선생",
+          "segments": [{ "form": "sənsæŋ", "gloss": "teacher" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m14", "surface": "였다",
+          "segments": [
+            { "form": "y", "gloss": "COP" },
+            { "form": "əss", "gloss": "PST" },
+            { "form": "ta", "gloss": "IND" }
+          ],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        }
+      ]
+    },
+    {
+      "id": "cop-ex5",
+      "sourceLanguage": "Mandarin Chinese",
+      "translation": "我姐姐是一位教師。(Wǒ jiějiě shì yī-wèi jiàoshī) ('My older sister is a teacher.')",
+      "notes": "Copula as invariant particle: shì does not inflect for tense, agreement, or aspect. It is used for classification/equative but not for locative or descriptive predicates (which use zài and zero respectively).",
+      "constituents": [
+        { "label": "CS",  "morphemeIds": ["m15"] },
+        { "label": "COP", "morphemeIds": ["m16"] },
+        { "label": "CC",  "morphemeIds": ["m17", "m18"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m15", "surface": "我姐姐",
+          "segments": [{ "form": "wǒ jiějiě", "gloss": "1SG older.sister" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m16", "surface": "是",
+          "segments": [{ "form": "shì", "gloss": "COP.INVAR" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m17", "surface": "一位",
+          "segments": [{ "form": "yī-wèi", "gloss": "one-CL" }],
+          "roles": { "Grammatical": ["numeral-classifier"] }
+        },
+        {
+          "id": "m18", "surface": "教師",
+          "segments": [{ "form": "jiàoshī", "gloss": "teacher" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
             "Predication": ["predicate"]
           }
         }

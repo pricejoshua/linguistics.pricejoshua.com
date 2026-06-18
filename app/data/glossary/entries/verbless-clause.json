@@ -1,13 +1,18 @@
 {
   "slug": "verbless-clause",
   "title": "Verbless Clause",
-  "definition": "A clause in which the [term:predicate] is a noun phrase, adjective, or prepositional phrase with no overt verb. The [term:copula] may be absent. Verbless clauses are common in equational and attributive predication across many of the world's languages.",
-  "relatedTerms": ["predicate", "copula", "subject"],
+  "definition": "A clause in which the [term:predicate] is a noun phrase, adjective, or prepositional phrase with no overt verb. The [term:copula] is absent. Verbless clauses are the most common strategy for [term:classification-predicate]s and [term:equative-predicate]s cross-linguistically, realized through juxtaposition (bare subject + predicate NP) or predicative marking (a suffix on the predicate NP). In many languages like Russian, the verbless clause is restricted to the present tense, with a copula appearing in past and future. In languages like Hamer, a dedicated predicate marker -ne signals the predicate NP. In languages like Nenets (Dixon §3.5), what appears to be a verbless clause is instead a [term:denominal-strategy]: the noun takes verbal agreement affixes.",
+  "relatedTerms": ["predicate", "copula", "subject", "classification-predicate", "equative-predicate", "denominal-strategy"],
   "examples": [
     {
       "id": "vl-ex1",
       "sourceLanguage": "English (constructed)",
       "translation": "She a teacher.",
+      "notes": "Constructed example illustrating zero-copula present; English does not grammatically allow this but many languages do in exactly this context.",
+      "constituents": [
+        { "label": "VCS", "morphemeIds": ["m1"] },
+        { "label": "VCC", "morphemeIds": ["m2", "m3"] }
+      ],
       "morphemes": [
         {
           "id": "m1", "surface": "She",
@@ -31,6 +36,95 @@
             "Semantic": ["property"],
             "Predication": ["predicate"]
           }
+        }
+      ]
+    },
+    {
+      "id": "vl-ex2",
+      "sourceLanguage": "Russian",
+      "translation": "Иван учитель. ('John is a teacher.' — present tense, no copula)",
+      "notes": "Russian omits the copula in the present tense, producing a juxtaposition verbless clause. Past and future tenses require the copula был/будет.",
+      "constituents": [
+        { "label": "VCS", "morphemeIds": ["m4"] },
+        { "label": "VCC", "morphemeIds": ["m5"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m4", "surface": "Иван",
+          "segments": [{ "form": "Иван", "gloss": "Ivan.NOM.M" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m5", "surface": "учитель",
+          "segments": [{ "form": "учитель", "gloss": "teacher.NOM.M" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "vl-ex3",
+      "sourceLanguage": "Hamer (Ethiopia)",
+      "translation": "inta dibi-ne ('I am a thief')",
+      "notes": "Predicative marking: the suffix -ne attaches to the predicate noun, distinguishing predicate from argument NPs without a copula verb.",
+      "constituents": [
+        { "label": "VCS", "morphemeIds": ["m6"] },
+        { "label": "VCC", "morphemeIds": ["m7"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m6", "surface": "inta",
+          "segments": [{ "form": "inta", "gloss": "1SG" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m7", "surface": "dibi-ne",
+          "segments": [{ "form": "dibi", "gloss": "thief" }, { "form": "ne", "gloss": "PRED" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "vl-ex4",
+      "sourceLanguage": "Kagayanen",
+      "translation": "Maistro Atong ya. ('Atong is a/the teacher.')",
+      "notes": "Juxtaposition with no copula; predicate NP precedes the subject. The definiteness marker ya on the subject NP is the only overt functional morphology.",
+      "constituents": [
+        { "label": "VCC", "morphemeIds": ["m8"] },
+        { "label": "VCS", "morphemeIds": ["m9", "m10"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m8", "surface": "Maistro",
+          "segments": [{ "form": "maistro", "gloss": "teacher" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m9", "surface": "Atong",
+          "segments": [{ "form": "Atong", "gloss": "Atong" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m10", "surface": "ya",
+          "segments": [{ "form": "ya", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
         }
       ]
     }

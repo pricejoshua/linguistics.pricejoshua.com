@@ -1,13 +1,18 @@
 {
   "slug": "predicate",
   "title": "Predicate",
-  "definition": "The part of a clause that makes an assertion about the [term:subject]. The predicate may be a verb phrase, noun phrase, adjective, or prepositional phrase. In [term:verbless-clause]s, there is no verbal predicate — the [term:copula] may be absent entirely.",
-  "relatedTerms": ["subject", "verbless-clause", "copula"],
+  "definition": "The part of a clause that makes an assertion about the [term:subject] and determines the clause's argument structure. Dixon (§11.1–2) is emphatic: 'predicate' in its grammatical sense covers intransitive predicate, transitive predicate, and the [term:copula] of a copula construction — but it does NOT include the [term:copula-complement]. In 'The river is wide', the predicate is the copula 'is' (which carries tense); 'wide' is the copula complement (CC), an argument of that predicate. Calling 'wide' a 'nominal predicate' (a common error) misidentifies the grammatical relation. In [term:verbless-clause]s, a noun or adjective directly heads an intransitive predicate without a copula — this is structurally different from copula complement function. The class of word that heads a predicate is typically the verb, but in many languages nouns may also head (usually intransitive) predicates: this is the secondary function of nouns in Dixon's Schemes II and IV (see [term:word-class] and [term:omnipredicative]). Predicates of being — [term:equative-predicate], [term:classification-predicate], [term:descriptive-predicate], [term:locative-predicate], [term:existential-predicate], and [term:possessive-predicate] — form a typologically important subtype realized through diverse strategies.",
+  "relatedTerms": ["subject", "verbless-clause", "copula", "copula-complement", "word-class", "omnipredicative", "equative-predicate", "classification-predicate", "descriptive-predicate", "locative-predicate", "existential-predicate", "possessive-predicate"],
   "examples": [
     {
       "id": "pred-ex1",
       "sourceLanguage": "English",
       "translation": "The man is tall.",
+      "constituents": [
+        { "label": "CS",  "morphemeIds": ["m1", "m2"] },
+        { "label": "COP", "morphemeIds": ["m3"] },
+        { "label": "CC",  "morphemeIds": ["m4"] }
+      ],
       "morphemes": [
         {
           "id": "m1", "surface": "The",
@@ -43,6 +48,10 @@
       "id": "pred-ex2",
       "sourceLanguage": "English (verbless)",
       "translation": "He sick.",
+      "constituents": [
+        { "label": "VCS", "morphemeIds": ["m5"] },
+        { "label": "VCC", "morphemeIds": ["m6"] }
+      ],
       "morphemes": [
         {
           "id": "m5", "surface": "He",
@@ -60,6 +69,40 @@
             "Grammatical": ["predicate", "adjective"],
             "Semantic": ["property"],
             "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pred-ex3",
+      "sourceLanguage": "Nootka (British Columbia, Dixon §3.5)",
+      "translation": "ʔi:h-ma: qo:ʔas-ʔi: ('The man is large.')",
+      "notes": "Dixon Scheme IV: verb ʔi:h 'be.large' in its primary function as predicate head (with agreement suffix -ma:); noun qo:ʔas 'man' in its primary function as argument (with article -ʔi:). Both classes can swap slots, but primary functions are most frequent.",
+      "constituents": [
+        { "label": "S", "morphemeIds": ["m8"] }
+      ],
+      "morphemes": [
+        {
+          "id": "m7", "surface": "ʔi:h-ma:",
+          "segments": [
+            { "form": "ʔi:h", "gloss": "be.large" },
+            { "form": "ma:", "gloss": "3SG.IND" }
+          ],
+          "roles": {
+            "Grammatical": ["predicate", "verb"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m8", "surface": "qo:ʔas-ʔi:",
+          "segments": [
+            { "form": "qo:ʔas", "gloss": "man" },
+            { "form": "ʔi:", "gloss": "ART" }
+          ],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
           }
         }
       ]
