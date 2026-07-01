@@ -1,0 +1,189 @@
+{
+  "slug": "transitivity",
+  "title": "Transitivity",
+  "definition": "Traditionally, transitivity is treated as a categorical property of a clause: a verb either takes an [term:patient]-like object, giving a transitive clause with [term:agent] (A) and object (O) arguments, or it does not, giving an intransitive clause with a single (S) argument. On this view a clause is simply transitive or intransitive, and the notion is understood as an activity 'carried over' or 'transferred' from an [term:agent] to a [term:patient]. Hopper & Thompson (1980) argue this binary picture is too coarse. They reanalyze Transitivity as a scalar property built from ten components that co-vary across languages, each ranging from a 'high' to a 'low' value: (A) participants — two or more (A and O) vs. one; (B) kinesis — action vs. non-action (something happens to Sally in *I hugged Sally*, but not in *I like Sally*); (C) aspect — telic vs. atelic (*I ate it up* vs. *I am eating it*); (D) punctuality — punctual vs. non-punctual (*kick* vs. *carry*); (E) volitionality — volitional vs. non-volitional (*I wrote your name* vs. *I forgot your name*); (F) affirmation — affirmative vs. negative; (G) mode — realis vs. irrealis; (H) agency — A high vs. low in potency (*George startled me* vs. *The picture startled me*); (I) [term:affectedness] of O — totally affected vs. not affected (*I drank up the milk* vs. *I drank some of the milk*); and (J) [term:individuation] of O — highly individuated vs. non-individuated, itself cashed out along several sub-scales (proper vs. common, human/animate vs. inanimate, concrete vs. abstract, singular vs. plural, count vs. mass, referential/definite vs. non-referential). A clause is not simply transitive or intransitive but more or less Transitive depending on how many of these components fall in the 'high' column; a clause high on every parameter exhibits CARDINAL Transitivity. Hopper & Thompson further argue these grammatical and semantic components are not arbitrary: they cluster together because Transitivity has a discourse function, with high-Transitivity clauses correlating with foregrounded, plot-advancing material and low-Transitivity clauses with backgrounded description.",
+  "relatedTerms": ["agent", "patient", "semantic-role", "subject"],
+  "examples": [
+    {
+      "id": "tr-ex1",
+      "title": "Low transitivity (English)",
+      "sourceLanguage": "English (Hopper & Thompson 1980, ex. 3a)",
+      "translation": "Jerry likes beer.",
+      "notes": "A stative, non-punctual, non-volitional predicate with a non-individuated (mass, non-referential) object — low on kinesis, punctuality, volitionality, and individuation of O.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "Jerry",
+          "segments": [{ "form": "Jerry", "gloss": "Jerry" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["experiencer"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "likes",
+          "segments": [{ "form": "like", "gloss": "like" }, { "form": "s", "gloss": "3SG.PRS" }],
+          "roles": {
+            "Grammatical": ["verb", "predicate"],
+            "Predication": ["predicate"],
+            "Transitivity": ["non-action", "non-punctual", "non-volitional", "atelic"]
+          }
+        },
+        {
+          "id": "m3", "surface": "beer",
+          "segments": [{ "form": "beer", "gloss": "beer" }],
+          "roles": {
+            "Grammatical": ["object", "NP-head"],
+            "Semantic": ["stimulus"],
+            "Transitivity": ["O-non-individuated", "mass", "non-referential"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tr-ex2",
+      "title": "High transitivity (English)",
+      "sourceLanguage": "English (Hopper & Thompson 1980, ex. 3b)",
+      "translation": "Jerry knocked Sam down.",
+      "notes": "Action, telic, punctual, volitional predicate with a totally affected, highly individuated (referential, animate, proper) object — high on nearly every parameter, close to cardinal Transitivity.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "Jerry",
+          "segments": [{ "form": "Jerry", "gloss": "Jerry" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["agent"],
+            "Predication": ["subject-of-predication"],
+            "Transitivity": ["A-high-potency", "volitional"]
+          }
+        },
+        {
+          "id": "m5", "surface": "knocked",
+          "segments": [{ "form": "knock", "gloss": "knock" }, { "form": "ed", "gloss": "PST" }],
+          "roles": {
+            "Grammatical": ["verb", "predicate"],
+            "Predication": ["predicate"],
+            "Transitivity": ["action", "telic", "punctual", "affirmative", "realis"]
+          }
+        },
+        {
+          "id": "m6", "surface": "Sam",
+          "segments": [{ "form": "Sam", "gloss": "Sam" }],
+          "roles": {
+            "Grammatical": ["object", "NP-head"],
+            "Semantic": ["patient"],
+            "Transitivity": ["O-totally-affected", "O-highly-individuated", "referential", "animate", "proper"]
+          }
+        },
+        {
+          "id": "m7", "surface": "down",
+          "segments": [{ "form": "down", "gloss": "down" }],
+          "roles": { "Grammatical": ["particle"] }
+        }
+      ]
+    },
+    {
+      "id": "tr-ex3",
+      "title": "Near-zero transitivity (English)",
+      "sourceLanguage": "English (Hopper & Thompson 1980, ex. 5)",
+      "translation": "There were no stars in the sky.",
+      "notes": "Only one participant, negative, with a non-referential O — has no feature in the 'high' column except realis mode.",
+      "morphemes": [
+        {
+          "id": "m8", "surface": "There",
+          "segments": [{ "form": "there", "gloss": "EXPL" }],
+          "roles": { "Grammatical": ["expletive-subject"] }
+        },
+        {
+          "id": "m9", "surface": "were",
+          "segments": [{ "form": "be", "gloss": "be" }, { "form": "PST", "gloss": "PST" }],
+          "roles": {
+            "Grammatical": ["verb", "predicate"],
+            "Predication": ["predicate"],
+            "Transitivity": ["non-action", "one-participant", "realis"]
+          }
+        },
+        {
+          "id": "m10", "surface": "no",
+          "segments": [{ "form": "no", "gloss": "NEG" }],
+          "roles": {
+            "Grammatical": ["determiner"],
+            "Transitivity": ["negative"]
+          }
+        },
+        {
+          "id": "m11", "surface": "stars",
+          "segments": [{ "form": "star", "gloss": "star" }, { "form": "s", "gloss": "PL" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Transitivity": ["O-non-individuated", "plural", "non-referential"]
+          }
+        },
+        {
+          "id": "m12", "surface": "in",
+          "segments": [{ "form": "in", "gloss": "in" }],
+          "roles": { "Grammatical": ["preposition"] }
+        },
+        {
+          "id": "m13", "surface": "the",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m14", "surface": "sky",
+          "segments": [{ "form": "sky", "gloss": "sky" }],
+          "roles": { "Grammatical": ["oblique", "NP-head"] }
+        }
+      ]
+    },
+    {
+      "id": "tr-ex4",
+      "title": "Individuation of O driving morphology: differential object marking (Spanish)",
+      "sourceLanguage": "Spanish",
+      "translation": "Vi a Juan. ('I saw Juan.') vs. Vi la mesa. ('I saw the table.')",
+      "notes": "Spanish differential object marking makes parameter J concrete: the preposition-derived marker a appears on the object only when it is animate and specific/referential — a highly individuated O — and is absent for the inanimate, equally definite la mesa. The same verb, the same event structure, but individuation of O alone determines whether the object is morphologically marked.",
+      "morphemes": [
+        {
+          "id": "m15", "surface": "Vi",
+          "segments": [{ "form": "ver", "gloss": "see" }, { "form": "í", "gloss": "1SG.PST" }],
+          "roles": {
+            "Grammatical": ["verb", "predicate"],
+            "Predication": ["predicate"],
+            "Transitivity": ["action", "punctual", "telic"]
+          }
+        },
+        {
+          "id": "m16", "surface": "a",
+          "segments": [{ "form": "a", "gloss": "DOM" }],
+          "roles": {
+            "Grammatical": ["case-marker"],
+            "Transitivity": ["O-highly-individuated", "animate", "referential"]
+          }
+        },
+        {
+          "id": "m17", "surface": "Juan",
+          "segments": [{ "form": "Juan", "gloss": "Juan" }],
+          "roles": {
+            "Grammatical": ["object", "NP-head"],
+            "Semantic": ["patient"],
+            "Transitivity": ["O-highly-individuated", "proper", "animate", "referential"]
+          }
+        },
+        {
+          "id": "m18", "surface": "la",
+          "segments": [{ "form": "la", "gloss": "DEF.F" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m19", "surface": "mesa",
+          "segments": [{ "form": "mesa", "gloss": "table" }],
+          "roles": {
+            "Grammatical": ["object", "NP-head"],
+            "Semantic": ["patient"],
+            "Transitivity": ["inanimate", "no-DOM"]
+          }
+        }
+      ]
+    }
+  ]
+}

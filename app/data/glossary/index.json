@@ -1,10 +1,25 @@
 [
   { "slug": "agent", "title": "Agent", "categories": ["semantic-roles"] },
+  { "slug": "classification-predicate", "title": "Classification Predicate", "categories": ["predication"] },
   { "slug": "copula", "title": "Copula", "categories": ["grammatical-relations", "predication"] },
+  { "slug": "copula-complement", "title": "Copula Complement", "categories": ["grammatical-relations", "predication"] },
+  { "slug": "denominal-strategy", "title": "Denominal Strategy", "categories": ["predication", "word-classes"] },
+  { "slug": "descriptive-predicate", "title": "Descriptive Predicate", "categories": ["predication"] },
+  { "slug": "equative-predicate", "title": "Equative Predicate", "categories": ["predication"] },
+  { "slug": "existential-predicate", "title": "Existential Predicate", "categories": ["predication"] },
+  { "slug": "locative-predicate", "title": "Locative Predicate", "categories": ["predication"] },
+  { "slug": "nominalization", "title": "Nominalization", "categories": ["word-classes"] },
+  { "slug": "omnipredicative", "title": "Omnipredicative", "categories": ["predication", "word-classes"] },
   { "slug": "patient", "title": "Patient", "categories": ["semantic-roles"] },
+  { "slug": "possessive-predicate", "title": "Possessive Predicate", "categories": ["predication"] },
   { "slug": "predicate", "title": "Predicate", "categories": ["grammatical-relations", "predication"] },
+  { "slug": "presentational-construction", "title": "Presentational Construction", "categories": ["predication"] },
   { "slug": "semantic-role", "title": "Semantic Role", "categories": ["semantic-roles"] },
   { "slug": "subject", "title": "Subject", "categories": ["grammatical-relations"] },
   { "slug": "theme", "title": "Theme", "categories": ["semantic-roles"] },
-  { "slug": "verbless-clause", "title": "Verbless Clause", "categories": ["predication"] }
+  { "slug": "transitivity", "title": "Transitivity", "categories": ["grammatical-relations", "semantic-roles"] },
+  { "slug": "verbalization", "title": "Verbalization", "categories": ["word-classes"] },
+  { "slug": "verbless-clause", "title": "Verbless Clause", "categories": ["predication"] },
+  { "slug": "word-class", "title": "Word Class", "categories": ["word-classes"] },
+  { "slug": "zero-derivation", "title": "Zero Derivation", "categories": ["word-classes"] }
 ]
