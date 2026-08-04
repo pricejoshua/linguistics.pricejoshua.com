@@ -12,6 +12,8 @@ import type {
 
 export interface FeatureGeometryTreeProps {
   geometry: PhoneGeometry;
+  /** Accessible name for the SVG — must distinguish this tree from every other on the page. */
+  label: string;
   size?: 'mini' | 'full';
 }
 
@@ -20,10 +22,10 @@ const LEAF_FONT_SIZE = 13;
 const VALUE_FONT_SIZE = 17;
 
 /** Faint enough to read as "absent from this representation", still legible. */
-const INACTIVE_OPACITY = 0.22;
+const INACTIVE_OPACITY = 0.35;
 
 /** Rendered CSS width. Narrower viewports scroll the container rather than shrink the type. */
-const RENDERED_WIDTH: Record<'mini' | 'full', number> = { mini: 900, full: 1240 };
+const RENDERED_WIDTH: Record<'mini' | 'full', number> = { mini: 900, full: 1180 };
 
 const NODES_BY_ID = new Map<GeometryNodeId, GeometryTreeNode>(
   GEOMETRY_TREE.map((n) => [n.id, n]),
@@ -52,6 +54,7 @@ function valueGlyph(value: '+' | '-' | undefined): string {
 
 export default function FeatureGeometryTree({
   geometry,
+  label,
   size = 'full',
 }: FeatureGeometryTreeProps) {
   const active = computeActiveIds(geometry);
@@ -65,7 +68,7 @@ export default function FeatureGeometryTree({
         height={(RENDERED_WIDTH[size] * GEOMETRY_VIEWBOX.height) / GEOMETRY_VIEWBOX.width}
         className="max-w-none"
         role="img"
-        aria-label="Feature geometry tree"
+        aria-label={label}
       >
         {/* Edges first so text sits on top of them. */}
         <g stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round">

@@ -136,7 +136,11 @@ export default function FeatureGeometryScreen() {
               Select one or more phones above.
             </p>
           ) : (
-            <FeatureGeometryTree geometry={combined} size="full" />
+            <FeatureGeometryTree
+              geometry={combined}
+              label={`Shared feature geometry for ${selectedWithGeometry.join(', ')}`}
+              size="full"
+            />
           )}
         </div>
 
@@ -146,7 +150,7 @@ export default function FeatureGeometryScreen() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Per-phone geometry
             </h2>
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {selectedWithGeometry.map((phone) => (
                 <div
                   key={phone}
@@ -155,7 +159,11 @@ export default function FeatureGeometryScreen() {
                   <div className="text-2xl font-sans mb-2 text-gray-900 dark:text-gray-100">
                     {phone}
                   </div>
-                  <FeatureGeometryTree geometry={PHONE_GEOMETRIES[phone]} size="mini" />
+                  <FeatureGeometryTree
+                    geometry={PHONE_GEOMETRIES[phone]}
+                    label={`Feature geometry for ${phone}`}
+                    size="mini"
+                  />
                 </div>
               ))}
             </div>

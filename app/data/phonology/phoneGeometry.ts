@@ -102,17 +102,30 @@ export const PHONE_GEOMETRY_SPECS: Record<string, GeometrySpec> = {
   'œ': vowelSpec(VOWEL_ROUNDED),
   'ɒ': vowelSpec(VOWEL_ROUNDED),
 };
+
+/** Phones whose geometry involved a judgment call worth surfacing to the user. */
 export const GEOMETRY_REVIEW_NOTES: Record<string, string> = {
+  'p': 'Labial only: [anterior] and [distributed] are Coronal dependents, so the flat table’s values are dropped for this labial.',
+  'pʰ': 'Labial only: [anterior] and [distributed] are Coronal dependents, so the flat table’s values are dropped for this labial.',
+  "p'": 'Labial only: [anterior] and [distributed] are Coronal dependents, so the flat table’s values are dropped for this labial.',
+  'b': 'Labial only: [anterior] and [distributed] are Coronal dependents, so the flat table’s values are dropped for this labial.',
+  'ɸ': 'Labial only: [anterior] and [distributed] are Coronal dependents, so the flat table’s values are dropped for this labial.',
+  'β': 'Labial only: [anterior] and [distributed] are Coronal dependents, so the flat table’s values are dropped for this labial.',
+  'm': 'Labial only: [anterior] and [distributed] are Coronal dependents, so the flat table’s values are dropped for this labial.',
+  'f': 'Labial only: [strident] is a Coronal dependent, so the flat table’s strident: + is dropped for this labiodental — yet the Feature Explorer’s Sibilants class still selects it on that flat value, so the two views disagree here.',
+  'v': 'Labial only: [strident] is a Coronal dependent, so the flat table’s strident: + is dropped for this labiodental — yet the Feature Explorer’s Sibilants class still selects it on that flat value, so the two views disagree here.',
   'ʃ': 'Coronal only: [−anterior, +distributed]. The flat table’s [high] is dropped — [high] is a Dorsal dependent.',
   'ʒ': 'Coronal only: [−anterior, +distributed]. The flat table’s [high] is dropped — [high] is a Dorsal dependent.',
   'tʃ': 'Coronal only: [−anterior, +distributed]. The flat table’s [high] is dropped — [high] is a Dorsal dependent.',
   'dʒ': 'Coronal only: [−anterior, +distributed]. The flat table’s [high] is dropped — [high] is a Dorsal dependent.',
   'ñ': 'Palatal nasal treated as Coronal [−anterior, +distributed]; the flat table’s [high] is dropped with the Dorsal node absent.',
+  'j': 'Placed under Dorsal [+high, −back], unlike the Coronal-only palato-alveolars ʃ ʒ tʃ dʒ ñ.',
   'h': 'The flat table’s glottal: + is read as [+spread glottis], not [+constricted glottis].',
   'ʔ': 'No Place node — a plain glottal stop, [+constricted glottis] only.',
   'w': 'Both Labial and Dorsal (labio-velar), so it carries [round] and [back, low, high].',
   'ɱ': 'Labiodental nasal placed under Labial; the flat table’s [anterior]/[distributed] are dropped with the Coronal node absent.',
 };
+
 /**
  * Maps the flat feature table onto the geometry. Leaves under a Place node the
  * phone lacks stay unspecified — [anterior] on a labial, for instance, is not
