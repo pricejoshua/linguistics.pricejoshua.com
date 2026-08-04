@@ -1173,7 +1173,7 @@ Check each of these and report what you saw:
 3. **Single phone `k`** — `Dorsal` solid with `[back] +`, `[low] −`, `[high] +`; `Coronal` and `Labial` faint.
 4. **Single phone `w`** — both `Labial` (`[round] +`) and `Dorsal` (`[back] +`, `[high] +`, `[low] −`) solid; `Coronal` faint.
 5. **Natural class** — select `t d s z n l ɬ ɾ θ ð ts` (all coronals): the shared tree keeps `Coronal` solid and greys `Labial`, `Dorsal`, `Tongue Root Node`. Leaves that differ across the set (e.g. `[voice]`, `[continuant]`) read `—`; leaves they agree on (e.g. `[anterior] +`) show the value.
-6. **Disagreement** — select `t` and `k`: `Place` stays solid but `Coronal` and `Dorsal` both go faint (neither is shared), and `[consonantal] +`, `[sonorant] −` still show since both agree.
+6. **Disagreement** — select `t` and `k`: `Coronal` and `Dorsal` both go faint (neither is shared), and `Place` goes faint with them, since a structural node is present only when a daughter is. `[consonantal] +` and `[sonorant] −` still show, since both phones agree on them.
 7. **Mini-trees** — selecting 3-4 phones renders one labelled mini-tree each in a 1-/2-column grid; each tile scrolls horizontally on a narrow window rather than shrinking the text to nothing.
 8. **Dark mode** — toggle the OS/browser theme; strokes and text stay legible in both.
 9. **No regression** — click back to the Feature Explorer tab; it still works.
