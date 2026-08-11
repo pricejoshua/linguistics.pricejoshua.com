@@ -7,6 +7,7 @@ import {
   anchorBottom,
   anchorTop,
   valueBaseline,
+  fontSizeFor,
   type LaidOutNode,
 } from '../../utils/hw-tools/treeLayout';
 
@@ -19,15 +20,19 @@ export interface EditableFeatureTreeProps {
   mode: 'edit' | 'export';
 }
 
-const NODE_FONT_SIZE = 15;
-const LEAF_FONT_SIZE = 13;
 const VALUE_FONT_SIZE = 17;
 const INACTIVE_OPACITY = 0.25;
 
-function valueGlyph(value: '+' | '-' | undefined): string {
+/** Real leaves cycle a value by default; a non-leaf can opt in via `valueOptions` (cvx cycles C/V/X). */
+function isCyclable(node: LaidOutNode): boolean {
+  return node.kind === 'leaf' || node.valueOptions !== undefined;
+}
+
+function valueGlyph(value: string | undefined): string {
+  if (value === undefined) return '';
   if (value === '+') return '+';
   if (value === '-') return '−';
-  return '';
+  return value;
 }
 
 const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
@@ -43,7 +48,7 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
     const layout = computeTreeLayout(active);
     const allNodes = Array.from(layout.values());
     const visibleNodes = interactive ? allNodes : allNodes.filter((n) => n.active);
-    const box = computeBoundingBox(visibleNodes);
+    const box = computeBoundingBox(visibleNodes, isCyclable);
 
     return (
       <svg
@@ -78,9 +83,11 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
 
         <g fill="currentColor" textAnchor="middle">
           {visibleNodes.map((node: LaidOutNode) => {
+            const cyclable = isCyclable(node);
             const isLeaf = node.kind === 'leaf';
             const value = state.get(node.id)?.value;
-            const handleActivate = () => (isLeaf ? onCycleLeaf(node.id) : onToggleNode(node.id));
+            const fontSize = fontSizeFor(node, node.active);
+            const handleActivate = () => (cyclable ? onCycleLeaf(node.id) : onToggleNode(node.id));
 
             return (
               <g
@@ -107,7 +114,7 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
                     key={`${node.id}-line-${i}`}
                     x={0}
                     y={i * LINE_HEIGHT}
-                    fontSize={isLeaf ? LEAF_FONT_SIZE : NODE_FONT_SIZE}
+                    fontSize={fontSize}
                     fontWeight={isLeaf ? 400 : 600}
                     // Rasterization (svgToPngBlob's `new Image()` load of a serialized SVG
                     // blob) runs in an isolated context that cannot fetch external web
@@ -115,11 +122,12 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
                     // name the generic family the browser/OS will actually use for the
                     // raster rather than a web font that's unreachable at export time.
                     fontFamily="sans-serif"
+                    className="transition-all duration-300 ease-out"
                   >
                     {line}
                   </text>
                 ))}
-                {isLeaf && node.active && (
+                {cyclable && node.active && (
                   <text
                     x={0}
                     y={valueBaseline(node) - node.y}

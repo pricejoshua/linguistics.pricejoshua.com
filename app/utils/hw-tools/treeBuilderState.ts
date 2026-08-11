@@ -2,7 +2,7 @@ import { TREE_NODES, type TreeNodeId } from '../../data/hw-tools/featureTreeTopo
 
 export interface NodeState {
   active: boolean;
-  value?: '+' | '-';
+  value?: string;
 }
 
 export type TreeBuilderState = Map<TreeNodeId, NodeState>;
@@ -59,21 +59,33 @@ export function toggleNode(state: TreeBuilderState, id: TreeNodeId): TreeBuilder
   return next;
 }
 
-const VALUE_CYCLE: (undefined | '+' | '-')[] = [undefined, '+', '-'];
+const DEFAULT_VALUE_OPTIONS = ['+', '-'];
+
+/** Most nodes cycle +/−; a node can declare its own set (e.g. cvx cycles C/V/X) via `valueOptions`. */
+function valueOptionsFor(id: TreeNodeId): string[] {
+  return NODES_BY_ID.get(id)?.valueOptions ?? DEFAULT_VALUE_OPTIONS;
+}
 
 /**
- * Cycles a leaf's value: unspecified -> + -> - -> unspecified. Setting a
- * value activates the leaf and cascades ancestors active, same as
- * `toggleNode`. Clearing it deactivates just the leaf (leaves have no
- * descendants, so there's nothing to cascade down).
+ * Cycles a node's value through its options (default +/−, unspecified in
+ * between each lap: unspecified -> opt1 -> opt2 -> ... -> unspecified).
+ * Setting a value activates the node and cascades ancestors active, same as
+ * `toggleNode`. Clearing it cascades descendants inactive too — real leaves
+ * have none, so this is a no-op for them, but a cyclable non-leaf (cvx) can
+ * have active children that would otherwise be left floating without their
+ * nearest active ancestor.
  */
 export function cycleLeafValue(state: TreeBuilderState, id: TreeNodeId): TreeBuilderState {
   const next = new Map(state);
+  const options = valueOptionsFor(id);
+  const cycle: (string | undefined)[] = [undefined, ...options];
   const current = next.get(id)?.value;
-  const currentIndex = VALUE_CYCLE.indexOf(current);
-  const value = VALUE_CYCLE[(currentIndex + 1) % VALUE_CYCLE.length];
+  const currentIndex = cycle.indexOf(current);
+  const value = cycle[(currentIndex + 1) % cycle.length];
   if (value === undefined) {
-    next.set(id, { active: false, value: undefined });
+    for (const nid of [id, ...descendantsOf(id)]) {
+      next.set(nid, { active: false, value: undefined });
+    }
   } else {
     next.set(id, { active: true, value });
     for (const nid of ancestorsOf(id)) {

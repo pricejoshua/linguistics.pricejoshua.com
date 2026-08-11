@@ -27,17 +27,52 @@ function childrenOf(id: TreeNodeId): TreeNode[] {
 
 const ROW_HEIGHT = 90;
 const START_Y = 30;
-const ACTIVE_LEAF_WIDTH = 100;
-const INACTIVE_LEAF_WIDTH = 24;
+
+/**
+ * Font sizes actually rendered for each combination — inactive nodes render
+ * smaller as well as fainter, which is what makes real compaction possible.
+ * (Text width doesn't shrink just because opacity drops, so if inactive
+ * nodes kept the active font size, no width budget could ever be small
+ * enough to compact them without labels colliding with their neighbors.)
+ */
+export const ACTIVE_LEAF_FONT_SIZE = 13;
+export const ACTIVE_NODE_FONT_SIZE = 15;
+export const INACTIVE_LEAF_FONT_SIZE = 9;
+export const INACTIVE_NODE_FONT_SIZE = 10;
+
+export function fontSizeFor(node: TreeNode, isActive: boolean): number {
+  const isLeaf = node.kind === 'leaf';
+  if (isActive) return isLeaf ? ACTIVE_LEAF_FONT_SIZE : ACTIVE_NODE_FONT_SIZE;
+  return isLeaf ? INACTIVE_LEAF_FONT_SIZE : INACTIVE_NODE_FONT_SIZE;
+}
+
+/** Rough average character width for the sans-serif label font, as a fraction of font size. */
+const CHAR_WIDTH_EM = 0.58;
+const LABEL_PAD = 12;
+const MIN_LABEL_WIDTH = 28;
+/** Extra breathing room between adjacent siblings' label boxes, beyond what their widths alone reserve. */
+const SIBLING_GAP = 8;
+
+/** Width a label actually needs at a given font size — the box a node gets must be at least this wide, or its text collides with its neighbors. */
+function labelWidth(label: string[], fontSize: number): number {
+  const longestLine = Math.max(...label.map((line) => line.length));
+  return Math.max(longestLine * fontSize * CHAR_WIDTH_EM + LABEL_PAD, MIN_LABEL_WIDTH);
+}
 
 function computeWidths(node: TreeNode, active: ReadonlySet<TreeNodeId>, widths: Map<TreeNodeId, number>): number {
   const children = childrenOf(node.id);
-  const width =
-    children.length === 0
-      ? active.has(node.id)
-        ? ACTIVE_LEAF_WIDTH
-        : INACTIVE_LEAF_WIDTH
-      : children.reduce((sum, c) => sum + computeWidths(c, active, widths), 0);
+  const isActive = active.has(node.id);
+  const ownWidth = labelWidth(node.label, fontSizeFor(node, isActive));
+  let width: number;
+  if (children.length === 0) {
+    width = ownWidth;
+  } else {
+    const childrenWidth =
+      children.reduce((sum, c) => sum + computeWidths(c, active, widths), 0) + (children.length - 1) * SIBLING_GAP;
+    // A node needs at least enough room for its own label too, even if its
+    // (typically narrower, single-child) subtree would otherwise be tighter.
+    width = Math.max(ownWidth, childrenWidth);
+  }
   widths.set(node.id, width);
   return width;
 }
@@ -63,14 +98,15 @@ function assignPositions(
   let x: number;
 
   if (children.length === 0) {
-    const width = widths.get(node.id) ?? ACTIVE_LEAF_WIDTH;
+    const width = widths.get(node.id) ?? MIN_LABEL_WIDTH;
     x = leftEdge + width / 2;
   } else {
     let cursor = leftEdge;
-    for (const child of children) {
+    children.forEach((child, i) => {
       assignPositions(child, cursor, depth + 1, active, widths, out);
       cursor += widths.get(child.id) ?? 0;
-    }
+      if (i < children.length - 1) cursor += SIBLING_GAP;
+    });
     const laidOutChildren = children.map((c) => out.get(c.id)).filter((c): c is LaidOutNode => c !== undefined);
     const activeChildren = laidOutChildren.filter((c) => c.active);
     const centerOver = activeChildren.length > 0 ? activeChildren : laidOutChildren;
@@ -100,7 +136,7 @@ export function anchorTop(node: LaidOutNode): number {
   return node.y - 12;
 }
 
-/** Baseline for the leaf value glyph (+ / − ), printed below a leaf's label. */
+/** Baseline for a cyclable node's value glyph, printed below its label. */
 export function valueBaseline(node: LaidOutNode): number {
   return node.y + (node.label.length - 1) * LINE_HEIGHT + 22;
 }
@@ -112,18 +148,21 @@ const BOX_PAD_BOTTOM = 20;
 /**
  * Tight bounding box over a set of laid-out nodes, sized from each node's
  * actual rendered extent (anchorTop for the top edge, valueBaseline for the
- * bottom edge of leaves that show a value) rather than raw x/y — a fixed
+ * bottom edge of nodes that can show a value) rather than raw x/y — a fixed
  * padding around raw y previously clipped the value glyph on two-line leaf
  * labels, since their ink extends further below y than a fixed pad assumed.
  */
-export function computeBoundingBox(nodes: LaidOutNode[]): { x: number; y: number; width: number; height: number } {
+export function computeBoundingBox(
+  nodes: LaidOutNode[],
+  cyclable: (node: LaidOutNode) => boolean,
+): { x: number; y: number; width: number; height: number } {
   if (nodes.length === 0) {
-    return { x: 0, y: 0, width: ACTIVE_LEAF_WIDTH, height: ROW_HEIGHT };
+    return { x: 0, y: 0, width: MIN_LABEL_WIDTH, height: ROW_HEIGHT };
   }
   const left = Math.min(...nodes.map((n) => n.x)) - BOX_PAD_X;
   const right = Math.max(...nodes.map((n) => n.x)) + BOX_PAD_X;
   const top = Math.min(...nodes.map(anchorTop)) - BOX_PAD_TOP;
-  const bottom = Math.max(...nodes.map((n) => (n.kind === 'leaf' ? valueBaseline(n) : anchorBottom(n)))) + BOX_PAD_BOTTOM;
+  const bottom = Math.max(...nodes.map((n) => (cyclable(n) ? valueBaseline(n) : anchorBottom(n)))) + BOX_PAD_BOTTOM;
   return {
     x: Math.max(0, left),
     y: Math.max(0, top),

@@ -14,6 +14,12 @@ export interface TreeNode {
   label: string[];
   parent: TreeNodeId | null;
   kind: TreeNodeKind;
+  /**
+   * Present only on nodes whose click cycles through a fixed set of values
+   * instead of the default +/− (currently just `cvx`, cycling C/V/X). Real
+   * leaves don't set this — they get the +/− default in `treeBuilderState.ts`.
+   */
+  valueOptions?: string[];
 }
 
 export const LINE_HEIGHT = 15;
@@ -31,7 +37,7 @@ export const LINE_HEIGHT = 15;
  * sitting at whatever spot was chosen to leave room for the full topology.
  */
 export const TREE_NODES: TreeNode[] = [
-  { id: 'cvx', label: ['C/V/X'], parent: null, kind: 'node' },
+  { id: 'cvx', label: ['C/V/X'], parent: null, kind: 'node', valueOptions: ['C', 'V', 'X'] },
 
   { id: 'root', label: ['Root Node'], parent: 'cvx', kind: 'node' },
   { id: 'tonal', label: ['Tonal', 'Node'], parent: 'cvx', kind: 'node' },
