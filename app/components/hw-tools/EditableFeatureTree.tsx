@@ -250,6 +250,54 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
             );
           })}
         </g>
+
+        {interactive && (
+          <g fill="currentColor">
+            {visibleNodes.map((node) => {
+              const parentId = node.parent;
+              if (!parentId) return null;
+              const siblings = siblingsOf(parentId);
+              if (siblings.length < 2) return null;
+              const currentIndex = siblings.findIndex((s) => s.id === node.id);
+              if (currentIndex === -1) return null;
+              const arrowY = anchorBottom(node) + 10;
+              const opacity = node.active ? 0.55 : 0.3;
+
+              return (
+                <g
+                  key={`reorder-${node.id}`}
+                  opacity={opacity}
+                  className="transition-all duration-300 ease-out"
+                >
+                  {currentIndex > 0 && (
+                    <path
+                      d={`M ${node.x - 10} ${arrowY - 5} L ${node.x - 18} ${arrowY} L ${node.x - 10} ${arrowY + 5} Z`}
+                      className="cursor-pointer hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        reorder(parentId, node.id, currentIndex - 1);
+                      }}
+                    >
+                      <title>Move left</title>
+                    </path>
+                  )}
+                  {currentIndex < siblings.length - 1 && (
+                    <path
+                      d={`M ${node.x + 10} ${arrowY - 5} L ${node.x + 18} ${arrowY} L ${node.x + 10} ${arrowY + 5} Z`}
+                      className="cursor-pointer hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        reorder(parentId, node.id, currentIndex + 1);
+                      }}
+                    >
+                      <title>Move right</title>
+                    </path>
+                  )}
+                </g>
+              );
+            })}
+          </g>
+        )}
       </svg>
     );
   },
