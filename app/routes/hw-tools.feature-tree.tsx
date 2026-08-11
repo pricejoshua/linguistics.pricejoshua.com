@@ -2,15 +2,24 @@ import { useRef, useState } from 'react';
 import EditableFeatureTree from '../components/hw-tools/EditableFeatureTree';
 import ExportControls from '../components/hw-tools/ExportControls';
 import { emptyTreeState, toggleNode, cycleLeafValue, activeNodeIds } from '../utils/hw-tools/treeBuilderState';
+import { emptySiblingOrder, reorderSibling } from '../utils/hw-tools/treeOrder';
+import { naturalChildOrder } from '../utils/hw-tools/treeLayout';
 import type { TreeNodeId } from '../data/hw-tools/featureTreeTopology';
 
 export default function FeatureTreeTool() {
   const [state, setState] = useState(emptyTreeState());
+  const [order, setOrder] = useState(emptySiblingOrder());
   const [previewOpen, setPreviewOpen] = useState(false);
   const exportRef = useRef<SVGSVGElement>(null);
 
   const handleToggle = (id: TreeNodeId) => setState((s) => toggleNode(s, id));
   const handleCycle = (id: TreeNodeId) => setState((s) => cycleLeafValue(s, id));
+  const handleReorder = (parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) =>
+    setOrder((o) => reorderSibling(o, parentId, childId, targetIndex, naturalChildOrder(parentId)));
+  const handleClear = () => {
+    setState(emptyTreeState());
+    setOrder(emptySiblingOrder());
+  };
   const hasActiveNodes = activeNodeIds(state).size > 0;
 
   return (
@@ -21,7 +30,8 @@ export default function FeatureTreeTool() {
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-300">
           Click a node to add it (and its ancestors); click again to remove it (and its descendants). Click a
-          leaf to cycle its value: unspecified → + → − → unspecified.
+          leaf to cycle its value: unspecified → + → − → unspecified. Drag a node left or right (or focus it
+          and use the arrow keys) to swap it with its siblings.
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           Nothing here is saved — copy your work before navigating away.
@@ -33,6 +43,8 @@ export default function FeatureTreeTool() {
           state={state}
           onToggleNode={handleToggle}
           onCycleLeaf={handleCycle}
+          order={order}
+          onReorderSibling={handleReorder}
           label="Feature geometry tree being built"
           mode="edit"
         />
@@ -50,7 +62,7 @@ export default function FeatureTreeTool() {
         </button>
         <button
           type="button"
-          onClick={() => setState(emptyTreeState())}
+          onClick={handleClear}
           className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
         >
           Clear
@@ -73,6 +85,7 @@ export default function FeatureTreeTool() {
           state={state}
           onToggleNode={() => {}}
           onCycleLeaf={() => {}}
+          order={order}
           label="Feature geometry tree export"
           mode="export"
         />

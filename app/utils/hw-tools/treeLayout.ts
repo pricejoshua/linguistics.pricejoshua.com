@@ -1,5 +1,6 @@
 import { TREE_NODES, LINE_HEIGHT, type TreeNode, type TreeNodeId } from '../../data/hw-tools/featureTreeTopology';
 import { activeNodeIds, type TreeBuilderState } from './treeBuilderState';
+import type { SiblingOrder } from './treeOrder';
 
 /** A tree node with a position and displayed label computed for the current state. */
 export interface LaidOutNode extends TreeNode {
@@ -20,6 +21,20 @@ for (const n of TREE_NODES) {
 
 function fullChildrenOf(id: TreeNodeId): TreeNode[] {
   return ALL_CHILDREN_BY_ID.get(id) ?? [];
+}
+
+/** The topology's declared child order for a parent — the starting point before any manual reordering. */
+export function naturalChildOrder(parentId: TreeNodeId): TreeNodeId[] {
+  return fullChildrenOf(parentId).map((n) => n.id);
+}
+
+/** Applies a `SiblingOrder` override on top of the natural topology order, if one exists for this parent. */
+function orderedChildrenOf(id: TreeNodeId, order: SiblingOrder | undefined): TreeNode[] {
+  const natural = fullChildrenOf(id);
+  const customIds = order?.get(id);
+  if (!customIds) return natural;
+  const byId = new Map(natural.map((n) => [n.id, n]));
+  return customIds.map((cid) => byId.get(cid)).filter((n): n is TreeNode => n !== undefined);
 }
 
 const ROOT: TreeNode = (() => {
@@ -153,10 +168,14 @@ function assignPositions(
   });
 }
 
-/** Lays out every node in the topology (active and inactive alike — nothing is ever excluded). This is the on-screen editor's view. */
-export function computeTreeLayout(state: TreeBuilderState): Map<TreeNodeId, LaidOutNode> {
+/** Lays out every node in the topology (active and inactive alike — nothing is ever excluded). This is the on-screen editor's view. `order` overrides sibling order at any parent (see `treeOrder.ts`), e.g. from drag-to-reorder. */
+export function computeTreeLayout(state: TreeBuilderState, order?: SiblingOrder): Map<TreeNodeId, LaidOutNode> {
   const active = activeNodeIds(state);
-  const ctx: LayoutContext = { active, valueOf: (id) => state.get(id)?.value, childrenOf: fullChildrenOf };
+  const ctx: LayoutContext = {
+    active,
+    valueOf: (id) => state.get(id)?.value,
+    childrenOf: (id) => orderedChildrenOf(id, order),
+  };
   const widths = new Map<TreeNodeId, number>();
   computeWidths(ROOT, ctx, widths);
   const out = new Map<TreeNodeId, LaidOutNode>();
@@ -174,12 +193,12 @@ export function computeTreeLayout(state: TreeBuilderState): Map<TreeNodeId, Laid
  * inactive clutter between them. This independent pass is what the
  * "Preview" toggle shows and what actually gets copied/downloaded.
  */
-export function computePrunedLayout(state: TreeBuilderState): Map<TreeNodeId, LaidOutNode> {
+export function computePrunedLayout(state: TreeBuilderState, order?: SiblingOrder): Map<TreeNodeId, LaidOutNode> {
   const active = activeNodeIds(state);
   const ctx: LayoutContext = {
     active,
     valueOf: (id) => state.get(id)?.value,
-    childrenOf: (id) => fullChildrenOf(id).filter((c) => active.has(c.id)),
+    childrenOf: (id) => orderedChildrenOf(id, order).filter((c) => active.has(c.id)),
   };
   if (!active.has(ROOT.id)) return new Map();
   const widths = new Map<TreeNodeId, number>();
