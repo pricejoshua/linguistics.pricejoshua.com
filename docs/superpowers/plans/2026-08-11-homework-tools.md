@@ -16,7 +16,7 @@
 - Deliberately **decoupled** from the existing `/phonology/geometry` reference screen: own copy of the tree topology, own components. Do not import from or modify `app/data/phonology/featureGeometry.ts` or `app/components/phonology/FeatureGeometryTree.tsx`.
 - No test framework is being introduced. This repo has none (`test/` holds unrelated HTML fixtures; no test script in `package.json`), and the approved design spec explicitly decided against adding one for this tool. Verification per task is `npm run typecheck` plus a concrete manual check in the browser (steps specify exact clicks/inputs and exact expected results).
 - Desktop-only. No mobile/tablet-specific layout work.
-- Follow existing code conventions: relative imports within a module's own directory tree (matching `app/components/phonology/*` and `app/data/phonology/*`), Tailwind utility classes with `dark:` variants matching the existing phonology screens' palette, single quotes / no semicolons style matching `phonology.geometry.tsx` and `featureGeometry.ts` (not the double-quote style in older files like `home.tsx` — match whichever file is closest analog to what you're writing).
+- Follow existing code conventions: relative imports within a module's own directory tree (matching `app/components/phonology/*` and `app/data/phonology/*`), Tailwind utility classes with `dark:` variants matching the existing phonology screens' palette, single-quote strings with semicolons matching `phonology.geometry.tsx` and `featureGeometry.ts` (not the double-quote style in older files like `home.tsx` — match whichever file is closest analog to what you're writing).
 
 ---
 
