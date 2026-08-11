@@ -6,10 +6,12 @@ import type { TreeNodeId } from '../data/hw-tools/featureTreeTopology';
 
 export default function FeatureTreeTool() {
   const [state, setState] = useState(emptyTreeState());
+  const [previewOpen, setPreviewOpen] = useState(false);
   const exportRef = useRef<SVGSVGElement>(null);
 
   const handleToggle = (id: TreeNodeId) => setState((s) => toggleNode(s, id));
   const handleCycle = (id: TreeNodeId) => setState((s) => cycleLeafValue(s, id));
+  const hasActiveNodes = activeNodeIds(state).size > 0;
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -37,7 +39,15 @@ export default function FeatureTreeTool() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <ExportControls svgRef={exportRef} disabled={activeNodeIds(state).size === 0} filenameBase="feature-tree" />
+        <ExportControls svgRef={exportRef} disabled={!hasActiveNodes} filenameBase="feature-tree" />
+        <button
+          type="button"
+          onClick={() => setPreviewOpen((open) => !open)}
+          disabled={!hasActiveNodes}
+          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-700"
+        >
+          {previewOpen ? 'Hide Preview' : 'Preview'}
+        </button>
         <button
           type="button"
           onClick={() => setState(emptyTreeState())}
@@ -47,7 +57,17 @@ export default function FeatureTreeTool() {
         </button>
       </div>
 
-      <div className="sr-only" aria-hidden="true">
+      {/*
+        Same tree, same ref used for export — the Preview toggle just decides
+        whether it's shown on screen. Always mounted (even when hidden) so
+        the ref is populated whenever the export buttons are clicked.
+      */}
+      <div className={previewOpen ? 'overflow-x-auto border border-gray-200 dark:border-gray-800 rounded p-4' : 'sr-only'} aria-hidden={!previewOpen}>
+        {previewOpen && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            This is exactly what gets copied/downloaded — only active nodes, laid out fresh.
+          </p>
+        )}
         <EditableFeatureTree
           ref={exportRef}
           state={state}

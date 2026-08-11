@@ -1,13 +1,14 @@
 import { forwardRef } from 'react';
 import { LINE_HEIGHT, type TreeNodeId } from '../../data/hw-tools/featureTreeTopology';
-import { activeNodeIds, type TreeBuilderState } from '../../utils/hw-tools/treeBuilderState';
+import { type TreeBuilderState } from '../../utils/hw-tools/treeBuilderState';
 import {
   computeTreeLayout,
+  computePrunedLayout,
   computeBoundingBox,
   anchorBottom,
   anchorTop,
-  valueBaseline,
   fontSizeFor,
+  isCyclable,
   type LaidOutNode,
 } from '../../utils/hw-tools/treeLayout';
 
@@ -16,39 +17,25 @@ export interface EditableFeatureTreeProps {
   onToggleNode: (id: TreeNodeId) => void;
   onCycleLeaf: (id: TreeNodeId) => void;
   label: string;
-  /** 'edit' shows every node, inactive ones faint, all clickable — this is the on-screen editor. 'export' omits inactive nodes/edges entirely — this is what gets copied. */
+  /** 'edit' shows every node, inactive ones faint, all clickable — this is the on-screen editor. 'export' shows only active nodes, independently re-laid-out as if the rest didn't exist — this is what gets copied and what the "Preview" toggle displays. */
   mode: 'edit' | 'export';
 }
 
-const VALUE_FONT_SIZE = 17;
 const INACTIVE_OPACITY = 0.25;
-
-/** Real leaves cycle a value by default; a non-leaf can opt in via `valueOptions` (cvx cycles C/V/X). */
-function isCyclable(node: LaidOutNode): boolean {
-  return node.kind === 'leaf' || node.valueOptions !== undefined;
-}
-
-function valueGlyph(value: string | undefined): string {
-  if (value === undefined) return '';
-  if (value === '+') return '+';
-  if (value === '-') return '−';
-  return value;
-}
 
 const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
   function EditableFeatureTree({ state, onToggleNode, onCycleLeaf, label, mode }, ref) {
-    const active = activeNodeIds(state);
     const interactive = mode === 'edit';
 
-    // One continuous layout computed over the whole topology every render —
-    // inactive nodes are never frozen at a separate fixed position, so an
-    // active node's inactive children can't visually detach from it when the
-    // active chain above them moves. Edit mode shows the full map (compact,
-    // faded inactive nodes included); export mode keeps only the active ones.
-    const layout = computeTreeLayout(active);
-    const allNodes = Array.from(layout.values());
-    const visibleNodes = interactive ? allNodes : allNodes.filter((n) => n.active);
-    const box = computeBoundingBox(visibleNodes, isCyclable);
+    // Edit mode: one continuous layout over the whole topology — inactive
+    // nodes are never frozen at a separate fixed position, so an active
+    // node's inactive children can't visually detach from it when the
+    // active chain above them moves. Export mode: an independent pass over
+    // just the active nodes, so the result isn't skewed by how much
+    // inactive clutter happened to sit between two active branches.
+    const layout = interactive ? computeTreeLayout(state) : computePrunedLayout(state);
+    const visibleNodes = Array.from(layout.values());
+    const box = computeBoundingBox(visibleNodes);
 
     return (
       <svg
@@ -85,7 +72,6 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
           {visibleNodes.map((node: LaidOutNode) => {
             const cyclable = isCyclable(node);
             const isLeaf = node.kind === 'leaf';
-            const value = state.get(node.id)?.value;
             const fontSize = fontSizeFor(node, node.active);
             const handleActivate = () => (cyclable ? onCycleLeaf(node.id) : onToggleNode(node.id));
 
@@ -109,7 +95,7 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
                     : undefined
                 }
               >
-                {node.label.map((line, i) => (
+                {node.displayLabel.map((line, i) => (
                   <text
                     key={`${node.id}-line-${i}`}
                     x={0}
@@ -127,17 +113,6 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
                     {line}
                   </text>
                 ))}
-                {cyclable && node.active && (
-                  <text
-                    x={0}
-                    y={valueBaseline(node) - node.y}
-                    fontSize={VALUE_FONT_SIZE}
-                    fontWeight={700}
-                    fontFamily="sans-serif"
-                  >
-                    {valueGlyph(value)}
-                  </text>
-                )}
               </g>
             );
           })}

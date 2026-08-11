@@ -1,18 +1,25 @@
 import { TREE_NODES, LINE_HEIGHT, type TreeNode, type TreeNodeId } from '../../data/hw-tools/featureTreeTopology';
+import { activeNodeIds, type TreeBuilderState } from './treeBuilderState';
 
-/** A tree node with a position computed for the current active/inactive state. */
+/** A tree node with a position and displayed label computed for the current state. */
 export interface LaidOutNode extends TreeNode {
   x: number;
   y: number;
   active: boolean;
+  /** The label actually shown — see `displayLabel`. */
+  displayLabel: string[];
 }
 
-const CHILDREN_BY_ID = new Map<TreeNodeId, TreeNode[]>();
+const ALL_CHILDREN_BY_ID = new Map<TreeNodeId, TreeNode[]>();
 for (const n of TREE_NODES) {
   if (n.parent === null) continue;
-  const siblings = CHILDREN_BY_ID.get(n.parent);
+  const siblings = ALL_CHILDREN_BY_ID.get(n.parent);
   if (siblings) siblings.push(n);
-  else CHILDREN_BY_ID.set(n.parent, [n]);
+  else ALL_CHILDREN_BY_ID.set(n.parent, [n]);
+}
+
+function fullChildrenOf(id: TreeNodeId): TreeNode[] {
+  return ALL_CHILDREN_BY_ID.get(id) ?? [];
 }
 
 const ROOT: TreeNode = (() => {
@@ -20,10 +27,6 @@ const ROOT: TreeNode = (() => {
   if (!root) throw new Error('Tree topology has no root node');
   return root;
 })();
-
-function childrenOf(id: TreeNodeId): TreeNode[] {
-  return CHILDREN_BY_ID.get(id) ?? [];
-}
 
 const ROW_HEIGHT = 90;
 const START_Y = 30;
@@ -46,7 +49,27 @@ export function fontSizeFor(node: TreeNode, isActive: boolean): number {
   return isLeaf ? INACTIVE_LEAF_FONT_SIZE : INACTIVE_NODE_FONT_SIZE;
 }
 
-/** Rough average character width for the sans-serif label font, as a fraction of font size. */
+/** Whether a node's value is shown by cycling — real leaves default to this; a non-leaf opts in via `valueOptions` (cvx). */
+export function isCyclable(node: TreeNode): boolean {
+  return node.kind === 'leaf' || node.valueOptions !== undefined;
+}
+
+/**
+ * The label actually rendered for a node given its current value. A leaf's
+ * value is spliced inside its bracket ("[strident]" -> "[+strident]"), since
+ * it's annotating a feature that's already named. A cyclable non-leaf (cvx)
+ * has its value replace the label entirely ("C/V/X" -> "C"), since it's
+ * presented as a choice among alternatives, not a feature being annotated.
+ */
+export function displayLabel(node: TreeNode, value: string | undefined): string[] {
+  if (!isCyclable(node) || value === undefined) return node.label;
+  const glyph = value === '+' ? '+' : value === '-' ? '−' : value;
+  if (node.kind === 'leaf') {
+    return node.label.map((line, i) => (i === 0 ? line.replace(/^\[/, `[${glyph}`) : line));
+  }
+  return [glyph];
+}
+
 const CHAR_WIDTH_EM = 0.58;
 const LABEL_PAD = 12;
 const MIN_LABEL_WIDTH = 28;
@@ -59,16 +82,23 @@ function labelWidth(label: string[], fontSize: number): number {
   return Math.max(longestLine * fontSize * CHAR_WIDTH_EM + LABEL_PAD, MIN_LABEL_WIDTH);
 }
 
-function computeWidths(node: TreeNode, active: ReadonlySet<TreeNodeId>, widths: Map<TreeNodeId, number>): number {
-  const children = childrenOf(node.id);
-  const isActive = active.has(node.id);
-  const ownWidth = labelWidth(node.label, fontSizeFor(node, isActive));
+interface LayoutContext {
+  active: ReadonlySet<TreeNodeId>;
+  valueOf: (id: TreeNodeId) => string | undefined;
+  childrenOf: (id: TreeNodeId) => TreeNode[];
+}
+
+function computeWidths(node: TreeNode, ctx: LayoutContext, widths: Map<TreeNodeId, number>): number {
+  const children = ctx.childrenOf(node.id);
+  const isActive = ctx.active.has(node.id);
+  const shown = displayLabel(node, ctx.valueOf(node.id));
+  const ownWidth = labelWidth(shown, fontSizeFor(node, isActive));
   let width: number;
   if (children.length === 0) {
     width = ownWidth;
   } else {
     const childrenWidth =
-      children.reduce((sum, c) => sum + computeWidths(c, active, widths), 0) + (children.length - 1) * SIBLING_GAP;
+      children.reduce((sum, c) => sum + computeWidths(c, ctx, widths), 0) + (children.length - 1) * SIBLING_GAP;
     // A node needs at least enough room for its own label too, even if its
     // (typically narrower, single-child) subtree would otherwise be tighter.
     width = Math.max(ownWidth, childrenWidth);
@@ -89,11 +119,11 @@ function assignPositions(
   node: TreeNode,
   leftEdge: number,
   depth: number,
-  active: ReadonlySet<TreeNodeId>,
+  ctx: LayoutContext,
   widths: Map<TreeNodeId, number>,
   out: Map<TreeNodeId, LaidOutNode>,
 ): void {
-  const children = childrenOf(node.id);
+  const children = ctx.childrenOf(node.id);
   const y = START_Y + depth * ROW_HEIGHT;
   let x: number;
 
@@ -103,7 +133,7 @@ function assignPositions(
   } else {
     let cursor = leftEdge;
     children.forEach((child, i) => {
-      assignPositions(child, cursor, depth + 1, active, widths, out);
+      assignPositions(child, cursor, depth + 1, ctx, widths, out);
       cursor += widths.get(child.id) ?? 0;
       if (i < children.length - 1) cursor += SIBLING_GAP;
     });
@@ -114,21 +144,54 @@ function assignPositions(
     x = (Math.min(...xs) + Math.max(...xs)) / 2;
   }
 
-  out.set(node.id, { ...node, x, y, active: active.has(node.id) });
+  out.set(node.id, {
+    ...node,
+    x,
+    y,
+    active: ctx.active.has(node.id),
+    displayLabel: displayLabel(node, ctx.valueOf(node.id)),
+  });
 }
 
-/** Lays out every node in the topology (active and inactive alike — nothing is ever excluded, per the design decision to keep the whole map visible and stable). */
-export function computeTreeLayout(active: ReadonlySet<TreeNodeId>): Map<TreeNodeId, LaidOutNode> {
+/** Lays out every node in the topology (active and inactive alike — nothing is ever excluded). This is the on-screen editor's view. */
+export function computeTreeLayout(state: TreeBuilderState): Map<TreeNodeId, LaidOutNode> {
+  const active = activeNodeIds(state);
+  const ctx: LayoutContext = { active, valueOf: (id) => state.get(id)?.value, childrenOf: fullChildrenOf };
   const widths = new Map<TreeNodeId, number>();
-  computeWidths(ROOT, active, widths);
+  computeWidths(ROOT, ctx, widths);
   const out = new Map<TreeNodeId, LaidOutNode>();
-  assignPositions(ROOT, 0, 0, active, widths, out);
+  assignPositions(ROOT, 0, 0, ctx, widths, out);
+  return out;
+}
+
+/**
+ * Lays out ONLY the active nodes, as if inactive ones didn't exist in the
+ * topology at all — not just the full layout filtered down afterward.
+ * Filtering the full layout still lets an active branch's absolute position
+ * drift based on how wide its inactive siblings happen to be, since those
+ * widths still consumed cursor space during the full pass — producing
+ * uneven spacing between active branches that have different amounts of
+ * inactive clutter between them. This independent pass is what the
+ * "Preview" toggle shows and what actually gets copied/downloaded.
+ */
+export function computePrunedLayout(state: TreeBuilderState): Map<TreeNodeId, LaidOutNode> {
+  const active = activeNodeIds(state);
+  const ctx: LayoutContext = {
+    active,
+    valueOf: (id) => state.get(id)?.value,
+    childrenOf: (id) => fullChildrenOf(id).filter((c) => active.has(c.id)),
+  };
+  if (!active.has(ROOT.id)) return new Map();
+  const widths = new Map<TreeNodeId, number>();
+  computeWidths(ROOT, ctx, widths);
+  const out = new Map<TreeNodeId, LaidOutNode>();
+  assignPositions(ROOT, 0, 0, ctx, widths, out);
   return out;
 }
 
 /** Bottom of a node's text block, in layout units — where an edge to a child leaves from. */
 export function anchorBottom(node: LaidOutNode): number {
-  return node.y + (node.label.length - 1) * LINE_HEIGHT + 6;
+  return node.y + (node.displayLabel.length - 1) * LINE_HEIGHT + 6;
 }
 
 /** Top of a node's text block — where an edge from its parent arrives. */
@@ -136,33 +199,19 @@ export function anchorTop(node: LaidOutNode): number {
   return node.y - 12;
 }
 
-/** Baseline for a cyclable node's value glyph, printed below its label. */
-export function valueBaseline(node: LaidOutNode): number {
-  return node.y + (node.label.length - 1) * LINE_HEIGHT + 22;
-}
-
 const BOX_PAD_X = 60;
 const BOX_PAD_TOP = 30;
 const BOX_PAD_BOTTOM = 20;
 
-/**
- * Tight bounding box over a set of laid-out nodes, sized from each node's
- * actual rendered extent (anchorTop for the top edge, valueBaseline for the
- * bottom edge of nodes that can show a value) rather than raw x/y — a fixed
- * padding around raw y previously clipped the value glyph on two-line leaf
- * labels, since their ink extends further below y than a fixed pad assumed.
- */
-export function computeBoundingBox(
-  nodes: LaidOutNode[],
-  cyclable: (node: LaidOutNode) => boolean,
-): { x: number; y: number; width: number; height: number } {
+/** Tight bounding box over a set of laid-out nodes, sized from each node's actual rendered extent. */
+export function computeBoundingBox(nodes: LaidOutNode[]): { x: number; y: number; width: number; height: number } {
   if (nodes.length === 0) {
     return { x: 0, y: 0, width: MIN_LABEL_WIDTH, height: ROW_HEIGHT };
   }
   const left = Math.min(...nodes.map((n) => n.x)) - BOX_PAD_X;
   const right = Math.max(...nodes.map((n) => n.x)) + BOX_PAD_X;
   const top = Math.min(...nodes.map(anchorTop)) - BOX_PAD_TOP;
-  const bottom = Math.max(...nodes.map((n) => (cyclable(n) ? valueBaseline(n) : anchorBottom(n)))) + BOX_PAD_BOTTOM;
+  const bottom = Math.max(...nodes.map(anchorBottom)) + BOX_PAD_BOTTOM;
   return {
     x: Math.max(0, left),
     y: Math.max(0, top),
