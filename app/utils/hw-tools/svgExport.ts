@@ -46,8 +46,15 @@ function downloadBlob(blob: Blob, filename: string): void {
   const anchor = document.createElement('a');
   anchor.href = url;
   anchor.download = filename;
+  document.body.appendChild(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  // The download navigation triggered by .click() is queued, not synchronous,
+  // so revoking in the same turn is a cross-browser race — defer to the next
+  // tick instead.
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+    anchor.remove();
+  }, 0);
 }
 
 /** Rasterizes the SVG to PNG and writes it to the clipboard. Falls back to a file download if the Clipboard API or an image write isn't available. */

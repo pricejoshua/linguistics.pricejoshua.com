@@ -26,8 +26,12 @@ export default function ExportControls({ svgRef, disabled, filenameBase }: Expor
 
   const handleDownloadSvg = () => {
     if (!svgRef.current) return;
-    downloadSvg(svgRef.current, `${filenameBase}.svg`);
-    setStatus('SVG downloaded — insert it in Word via Insert > Pictures for true vector quality.');
+    try {
+      downloadSvg(svgRef.current, `${filenameBase}.svg`);
+      setStatus('SVG downloaded — insert it in Word via Insert > Pictures for true vector quality.');
+    } catch {
+      setStatus('Could not export SVG — try again.');
+    }
   };
 
   return (

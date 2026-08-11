@@ -75,7 +75,12 @@ export function layoutRule(rule: Rule): RuleLayout {
       const width = contentWidth + SLOT_PADDING_X * 2 + BRACKET_WIDTH * 2;
       slots.push({ kind: 'matrix', values: slot.values, x: cursor, width, contentWidth });
       cursor += width + SLOT_GAP;
-      maxStack = Math.max(maxStack, slot.values.length);
+      // Blank/whitespace-only lines don't count toward stack height — a
+      // misclicked "+ feature line" that's left empty shouldn't inflate the
+      // bracket. The underlying values array is left untouched elsewhere;
+      // this only affects the computed layout height.
+      const visibleCount = slot.values.filter((v) => v.trim() !== '').length;
+      maxStack = Math.max(maxStack, visibleCount);
     }
   }
 

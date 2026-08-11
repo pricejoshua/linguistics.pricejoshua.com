@@ -17,6 +17,39 @@ const LEAF_FONT_SIZE = 13;
 const VALUE_FONT_SIZE = 17;
 const INACTIVE_OPACITY = 0.25;
 
+/**
+ * Padding around the active-node bounding box for export mode. Labels are
+ * center-anchored text (textAnchor="middle"), so they extend roughly this far
+ * either side of a node's x; multi-line labels and leaf value glyphs extend
+ * below a node's y, hence the asymmetric horizontal/vertical padding.
+ */
+const EXPORT_PAD_X = 80;
+const EXPORT_PAD_Y = 30;
+
+/**
+ * Tight bounding box over the active nodes' positions, for export mode —
+ * mirrors how RuleDiagram derives its viewBox from actual content size
+ * (via layoutRule) rather than a fixed canvas. Falls back to the full fixed
+ * VIEWBOX if there are no nodes to bound (defensive — export is disabled
+ * with zero active nodes, so this shouldn't normally be reached).
+ */
+function computeExportBox(nodes: TreeNode[]): { x: number; y: number; width: number; height: number } {
+  if (nodes.length === 0) {
+    return { x: 0, y: 0, width: VIEWBOX.width, height: VIEWBOX.height };
+  }
+  const xs = nodes.map((n) => n.x);
+  const ys = nodes.map((n) => n.y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const left = Math.max(0, minX - EXPORT_PAD_X);
+  const top = Math.max(0, minY - EXPORT_PAD_Y);
+  const right = maxX + EXPORT_PAD_X;
+  const bottom = maxY + EXPORT_PAD_Y;
+  return { x: left, y: top, width: Math.max(right - left, 1), height: Math.max(bottom - top, 1) };
+}
+
 function anchorBottom(node: TreeNode): number {
   return node.y + (node.label.length - 1) * LINE_HEIGHT + 6;
 }
@@ -37,13 +70,18 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
     const active = activeNodeIds(state);
     const interactive = mode === 'edit';
     const visibleNodes = TREE_NODES.filter((n) => interactive || active.has(n.id));
+    // Edit mode always uses the fixed VIEWBOX so the on-screen editor doesn't
+    // reflow/resize as the student toggles nodes. Export mode uses a tight
+    // box over just the active nodes so a small tree doesn't paste as a
+    // mostly-empty image.
+    const box = interactive ? { x: 0, y: 0, width: VIEWBOX.width, height: VIEWBOX.height } : computeExportBox(visibleNodes);
 
     return (
       <svg
         ref={ref}
-        viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-        width={VIEWBOX.width}
-        height={VIEWBOX.height}
+        viewBox={`${box.x} ${box.y} ${box.width} ${box.height}`}
+        width={box.width}
+        height={box.height}
         role="img"
         aria-label={label}
         className="text-gray-900 dark:text-gray-100"
@@ -101,7 +139,14 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
                     y={node.y + i * LINE_HEIGHT}
                     fontSize={isLeaf ? LEAF_FONT_SIZE : NODE_FONT_SIZE}
                     fontWeight={isLeaf ? 400 : 600}
-                    fontFamily="'Noto Sans', sans-serif"
+                    // Rasterization (svgToPngBlob's `new Image()` load of a serialized SVG
+                    // blob) runs in an isolated context that cannot fetch external web
+                    // fonts — only locally-installed fonts affect the exported PNG, so we
+                    // name the generic family the browser/OS will actually use for the
+                    // raster rather than a web font that's unreachable at export time.
+                    // True embedding (a base64 font in the serialized SVG's <style>) would
+                    // be needed for guaranteed cross-machine IPA glyph fidelity.
+                    fontFamily="sans-serif"
                   >
                     {line}
                   </text>
@@ -112,7 +157,9 @@ const EditableFeatureTree = forwardRef<SVGSVGElement, EditableFeatureTreeProps>(
                     y={valueBaseline(node)}
                     fontSize={VALUE_FONT_SIZE}
                     fontWeight={700}
-                    fontFamily="'Noto Sans', sans-serif"
+                    // See fontFamily comment above — only locally-installed fonts affect
+                    // the rasterized PNG export.
+                    fontFamily="sans-serif"
                   >
                     {valueGlyph(value)}
                   </text>

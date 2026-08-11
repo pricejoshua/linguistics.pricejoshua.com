@@ -4,6 +4,13 @@ import RuleDiagram from '../components/hw-tools/RuleDiagram';
 import ExportControls from '../components/hw-tools/ExportControls';
 import type { Rule } from '../utils/hw-tools/ruleLayout';
 
+/** True if at least one slot has real (non-whitespace) content, not just an empty placeholder slot. */
+function hasContent(rule: Rule): boolean {
+  return rule.some((slot) =>
+    slot.kind === 'text' ? slot.value.trim() !== '' : slot.values.some((v) => v.trim() !== ''),
+  );
+}
+
 export default function RuleNotationTool() {
   const [rule, setRule] = useState<Rule>([]);
   const exportRef = useRef<SVGSVGElement>(null);
@@ -27,7 +34,16 @@ export default function RuleNotationTool() {
         <RuleDiagram ref={exportRef} rule={rule} label="Rule notation preview" />
       </div>
 
-      <ExportControls svgRef={exportRef} disabled={rule.length === 0} filenameBase="rule-notation" />
+      <div className="flex flex-wrap items-center gap-3">
+        <ExportControls svgRef={exportRef} disabled={!hasContent(rule)} filenameBase="rule-notation" />
+        <button
+          type="button"
+          onClick={() => setRule([])}
+          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+        >
+          Clear
+        </button>
+      </div>
     </div>
   );
 }

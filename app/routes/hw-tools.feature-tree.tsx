@@ -36,7 +36,16 @@ export default function FeatureTreeTool() {
         />
       </div>
 
-      <ExportControls svgRef={exportRef} disabled={activeNodeIds(state).size === 0} filenameBase="feature-tree" />
+      <div className="flex flex-wrap items-center gap-3">
+        <ExportControls svgRef={exportRef} disabled={activeNodeIds(state).size === 0} filenameBase="feature-tree" />
+        <button
+          type="button"
+          onClick={() => setState(emptyTreeState())}
+          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+        >
+          Clear
+        </button>
+      </div>
 
       <div className="sr-only" aria-hidden="true">
         <EditableFeatureTree

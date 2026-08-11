@@ -72,17 +72,26 @@ export default function RuleBuilder({ rule, onChange }: RuleBuilderProps) {
             ) : (
               <div className="flex flex-col gap-1">
                 {slot.values.map((v, j) => (
-                  <input
-                    key={j}
-                    type="text"
-                    value={v}
-                    onChange={(e) => {
-                      const values = [...slot.values];
-                      values[j] = e.target.value;
-                      updateSlot(i, { kind: 'matrix', values });
-                    }}
-                    className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 w-24"
-                  />
+                  <div key={j} className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      value={v}
+                      onChange={(e) => {
+                        const values = [...slot.values];
+                        values[j] = e.target.value;
+                        updateSlot(i, { kind: 'matrix', values });
+                      }}
+                      className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 w-24"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => updateSlot(i, { kind: 'matrix', values: slot.values.filter((_, k) => k !== j) })}
+                      aria-label="Remove feature line"
+                      className="text-sm text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ))}
                 <button
                   type="button"
