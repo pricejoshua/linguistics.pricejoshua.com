@@ -12,12 +12,16 @@ export default function ExportControls({ svgRef, disabled, filenameBase }: Expor
 
   const handleCopyPng = async () => {
     if (!svgRef.current) return;
-    const result = await copySvgAsPng(svgRef.current);
-    setStatus(
-      result === 'copied'
-        ? 'Copied to clipboard — paste into Word with Ctrl+V.'
-        : 'Clipboard copy unavailable — PNG downloaded instead.',
-    );
+    try {
+      const result = await copySvgAsPng(svgRef.current);
+      setStatus(
+        result === 'copied'
+          ? 'Copied to clipboard — paste into Word with Ctrl+V.'
+          : 'Clipboard copy unavailable — PNG downloaded instead.',
+      );
+    } catch {
+      setStatus('Could not export image — try again.');
+    }
   };
 
   const handleDownloadSvg = () => {
