@@ -3,6 +3,7 @@ import { Link } from "react-router";
 const pages = [
   { path: "/", label: "Home" },
   { path: "/phonology", label: "Phonology Helper" },
+  { path: "/hw-tools", label: "Homework Tools" },
   { path: "/anki", label: "Anki GPA Flashcard Helpers" },
   { path: "/glossary", label: "Linguistics Glossary" },
 ];
