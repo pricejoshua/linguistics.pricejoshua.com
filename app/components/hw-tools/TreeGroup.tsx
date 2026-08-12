@@ -5,6 +5,7 @@ import {
   anchorTop,
   fontSizeFor,
   isCyclable,
+  nodeLabelHalfWidth,
   type LaidOutNode,
 } from '../../utils/hw-tools/treeLayout';
 
@@ -336,15 +337,35 @@ export default function TreeGroup({
                   {line}
                 </text>
               ))}
-              {inserted && (
-                <g stroke="currentColor" strokeWidth={1.4} opacity={node.active ? 1 : INACTIVE_OPACITY}>
-                  <line x1={16} y1={0} x2={30} y2={0} />
-                  <path d="M 16 0 L 22 -4 L 22 4 Z" fill="currentColor" stroke="none" />
-                  <text x={38} y={5} fontSize={fontSize} fontFamily="sans-serif" stroke="none" fill="currentColor">
-                    Ø
-                  </text>
-                </g>
-              )}
+              {inserted && (() => {
+                // Start past the label's actual rendered right edge, not a
+                // fixed guess — a long label like "[+anterior]" is wider
+                // than any single fixed offset could safely assume, so a
+                // fixed offset either overlaps long labels or leaves an
+                // awkward gap after short ones.
+                const lineStart = nodeLabelHalfWidth(node) + 6;
+                const lineEnd = lineStart + 14;
+                return (
+                  <g stroke="currentColor" strokeWidth={1.4} opacity={node.active ? 1 : INACTIVE_OPACITY}>
+                    <line x1={lineStart} y1={0} x2={lineEnd} y2={0} />
+                    <path
+                      d={`M ${lineStart} 0 L ${lineStart + 6} -4 L ${lineStart + 6} 4 Z`}
+                      fill="currentColor"
+                      stroke="none"
+                    />
+                    <text
+                      x={lineEnd + 8}
+                      y={5}
+                      fontSize={fontSize}
+                      fontFamily="sans-serif"
+                      stroke="none"
+                      fill="currentColor"
+                    >
+                      Ø
+                    </text>
+                  </g>
+                );
+              })()}
             </g>
           );
         })}

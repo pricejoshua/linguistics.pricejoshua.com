@@ -97,6 +97,18 @@ function labelWidth(label: string[], fontSize: number): number {
   return Math.max(longestLine * fontSize * CHAR_WIDTH_EM + LABEL_PAD, MIN_LABEL_WIDTH);
 }
 
+/**
+ * Half the actual rendered width of a node's current label (its
+ * `displayLabel`, at whatever font size it's currently drawn at) — how far
+ * a side annotation (e.g. the "Ø ->" insertion marker) needs to start from
+ * the node's own x to clear the label's text instead of overlapping it.
+ * Uses the same estimate `computeWidths` used to reserve this node's own
+ * layout space, so it can't disagree with what actually got drawn.
+ */
+export function nodeLabelHalfWidth(node: LaidOutNode): number {
+  return labelWidth(node.displayLabel, fontSizeFor(node, node.active)) / 2;
+}
+
 interface LayoutContext {
   active: ReadonlySet<TreeNodeId>;
   valueOf: (id: TreeNodeId) => string | undefined;
