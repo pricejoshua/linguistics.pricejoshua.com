@@ -2,17 +2,19 @@ import { useRef, useState } from 'react';
 import RuleBuilder from '../components/hw-tools/RuleBuilder';
 import RuleDiagram from '../components/hw-tools/RuleDiagram';
 import ExportControls from '../components/hw-tools/ExportControls';
-import type { Rule } from '../utils/hw-tools/ruleLayout';
+import { emptyRule, type Rule, type RuleSlot } from '../utils/hw-tools/ruleLayout';
 
-/** True if at least one slot has real (non-whitespace) content, not just an empty placeholder slot. */
+function slotHasContent(slot: RuleSlot): boolean {
+  return slot.kind === 'text' ? slot.value.trim() !== '' : slot.values.some((v) => v.trim() !== '');
+}
+
+/** True if at least one zone has a slot with real (non-whitespace) content, not just an empty placeholder. */
 function hasContent(rule: Rule): boolean {
-  return rule.some((slot) =>
-    slot.kind === 'text' ? slot.value.trim() !== '' : slot.values.some((v) => v.trim() !== ''),
-  );
+  return [...rule.target, ...rule.change, ...rule.environmentLeft, ...rule.environmentRight].some(slotHasContent);
 }
 
 export default function RuleNotationTool() {
-  const [rule, setRule] = useState<Rule>([]);
+  const [rule, setRule] = useState<Rule>(emptyRule());
   const exportRef = useRef<SVGSVGElement>(null);
 
   return (
@@ -20,8 +22,9 @@ export default function RuleNotationTool() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Rule Notation Builder</h1>
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          Build a rule left to right. Add plain symbols, or a feature matrix for a bracketed set of stacked
-          values.
+          Fill in each zone of the rule: Target and Change around the arrow, Environment before/after the
+          blank. Add plain symbols, or a feature matrix (standalone, or attached under a symbol with
+          "+ matrix").
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           Nothing here is saved — copy your work before navigating away.
@@ -38,7 +41,7 @@ export default function RuleNotationTool() {
         <ExportControls svgRef={exportRef} disabled={!hasContent(rule)} filenameBase="rule-notation" />
         <button
           type="button"
-          onClick={() => setRule([])}
+          onClick={() => setRule(emptyRule())}
           className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
         >
           Clear
