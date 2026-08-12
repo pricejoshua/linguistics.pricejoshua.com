@@ -164,6 +164,7 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
                   <text
                     x={lineEnd + 6}
                     y={0}
+                    dominantBaseline="central"
                     fontSize={rootFontSize}
                     fontFamily="sans-serif"
                     stroke="none"

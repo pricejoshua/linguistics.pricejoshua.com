@@ -370,6 +370,7 @@ export default function TreeGroup({
                     <text
                       x={lineEnd + 6}
                       y={0}
+                      dominantBaseline="central"
                       fontSize={fontSize}
                       fontFamily="sans-serif"
                       stroke="none"
