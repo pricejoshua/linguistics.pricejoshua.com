@@ -342,8 +342,13 @@ export default function TreeGroup({
                 // fixed guess — a long label like "[+anterior]" is wider
                 // than any single fixed offset could safely assume, so a
                 // fixed offset either overlaps long labels or leaves an
-                // awkward gap after short ones.
-                const lineStart = nodeLabelHalfWidth(node) + 6;
+                // awkward gap after short ones. nodeLabelHalfWidth already
+                // bakes in half of the label's own padding, so only a small
+                // additional gap is needed on top of it. y stays at 0 (the
+                // label's own baseline, same as its first line) rather than
+                // shifted down, so the arrow/Ø sit level with the text
+                // instead of visibly sagging below it.
+                const lineStart = nodeLabelHalfWidth(node) + 2;
                 const lineEnd = lineStart + 14;
                 return (
                   <g stroke="currentColor" strokeWidth={1.4} opacity={node.active ? 1 : INACTIVE_OPACITY}>
@@ -354,8 +359,8 @@ export default function TreeGroup({
                       stroke="none"
                     />
                     <text
-                      x={lineEnd + 8}
-                      y={5}
+                      x={lineEnd + 6}
+                      y={0}
                       fontSize={fontSize}
                       fontFamily="sans-serif"
                       stroke="none"

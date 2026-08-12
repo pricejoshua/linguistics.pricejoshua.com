@@ -7,6 +7,8 @@ import {
   anchorTop,
   anchorBottom,
   depthOf,
+  nodeLabelHalfWidth,
+  fontSizeFor,
   type LaidOutNode,
 } from '../../utils/hw-tools/treeLayout';
 import type { TreeInstance, TreeEndpoint, TreeLink } from '../../utils/hw-tools/treeLinks';
@@ -129,20 +131,42 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
               onToggleTreeDeleted={() => onToggleTreeDeleted(tree.id)}
               svgElRef={svgElRef}
             />
-            {/* Marked deleted, but still shown fully active — only the arrow-to-Ø near the root indicates the rule deletes this segment. */}
-            {tree.deleted && root && (
-              <g
-                stroke="currentColor"
-                strokeWidth={1.4}
-                transform={`translate(${root.x + offsetX}, ${anchorTop(root) - 14})`}
-              >
-                <line x1={0} y1={0} x2={20} y2={0} />
-                <path d="M 20 0 L 14 -4 L 14 4 Z" fill="currentColor" stroke="none" />
-                <text x={28} y={5} fontSize={14} fontFamily="sans-serif" stroke="none" fill="currentColor">
-                  Ø
-                </text>
-              </g>
-            )}
+            {/*
+              Marked deleted, but still shown fully active — only the
+              arrow-to-Ø indicates the rule deletes this segment. Runs
+              straight out of the root's own label, same row/baseline as
+              its text (not floating above it), same positioning pattern
+              TreeGroup uses for the insertion annotation: start just past
+              the label's actual rendered edge, not a fixed guess.
+            */}
+            {tree.deleted && root && (() => {
+              const lineStart = nodeLabelHalfWidth(root) + 2;
+              const lineEnd = lineStart + 14;
+              return (
+                <g
+                  stroke="currentColor"
+                  strokeWidth={1.4}
+                  transform={`translate(${root.x + offsetX}, ${root.y})`}
+                >
+                  <line x1={lineStart} y1={0} x2={lineEnd} y2={0} />
+                  <path
+                    d={`M ${lineEnd} 0 L ${lineEnd - 6} -4 L ${lineEnd - 6} 4 Z`}
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <text
+                    x={lineEnd + 6}
+                    y={0}
+                    fontSize={fontSizeFor(root, root.active)}
+                    fontFamily="sans-serif"
+                    stroke="none"
+                    fill="currentColor"
+                  >
+                    Ø
+                  </text>
+                </g>
+              );
+            })()}
           </g>
         );
       })}
