@@ -140,13 +140,20 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
               the label's actual rendered edge, not a fixed guess.
             */}
             {tree.deleted && root && (() => {
-              const lineStart = nodeLabelHalfWidth(root) + 2;
+              const lineStart = nodeLabelHalfWidth(root) + 4;
               const lineEnd = lineStart + 14;
+              const rootFontSize = fontSizeFor(root, root.active);
+              // y=0 here is root.y, which is the baseline of the root's own
+              // label text, not its visual center — shift up so the arrow
+              // runs through the middle of the glyphs instead of along
+              // their bottom edge (same fix, same reasoning, as the
+              // insertion annotation in TreeGroup.tsx).
+              const vCenter = -rootFontSize * 0.3;
               return (
                 <g
                   stroke="currentColor"
                   strokeWidth={1.4}
-                  transform={`translate(${root.x + offsetX}, ${root.y})`}
+                  transform={`translate(${root.x + offsetX}, ${root.y + vCenter})`}
                 >
                   <line x1={lineStart} y1={0} x2={lineEnd} y2={0} />
                   <path
@@ -157,7 +164,7 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
                   <text
                     x={lineEnd + 6}
                     y={0}
-                    fontSize={fontSizeFor(root, root.active)}
+                    fontSize={rootFontSize}
                     fontFamily="sans-serif"
                     stroke="none"
                     fill="currentColor"

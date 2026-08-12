@@ -98,15 +98,25 @@ function labelWidth(label: string[], fontSize: number): number {
 }
 
 /**
- * Half the actual rendered width of a node's current label (its
+ * Half the actual glyph width of a node's current label (its
  * `displayLabel`, at whatever font size it's currently drawn at) — how far
  * a side annotation (e.g. the "Ø ->" insertion marker) needs to start from
- * the node's own x to clear the label's text instead of overlapping it.
- * Uses the same estimate `computeWidths` used to reserve this node's own
- * layout space, so it can't disagree with what actually got drawn.
+ * the node's own x to clear the visible text instead of overlapping it.
+ *
+ * Deliberately NOT `labelWidth(...)/2` — that function pads every label out
+ * to at least `MIN_LABEL_WIDTH` so short single-character labels (a leaf
+ * node's own topology-level siblings, or a root cycled down to just "C")
+ * don't get crushed against their neighbors in the tree layout. That floor
+ * has nothing to do with where the glyph itself actually ends, so reusing
+ * it here made a short label's annotation start visibly farther from the
+ * text than a long label's — the padding dominated the short case and was
+ * negligible in the long one. This is the raw character-count estimate
+ * with no padding and no floor, so it tracks the real glyph edge for any
+ * label length.
  */
 export function nodeLabelHalfWidth(node: LaidOutNode): number {
-  return labelWidth(node.displayLabel, fontSizeFor(node, node.active)) / 2;
+  const longestLine = Math.max(...node.displayLabel.map((line) => line.length));
+  return (longestLine * fontSizeFor(node, node.active) * CHAR_WIDTH_EM) / 2;
 }
 
 interface LayoutContext {

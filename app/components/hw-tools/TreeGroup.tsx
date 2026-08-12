@@ -344,14 +344,23 @@ export default function TreeGroup({
                 // fixed offset either overlaps long labels or leaves an
                 // awkward gap after short ones. nodeLabelHalfWidth already
                 // bakes in half of the label's own padding, so only a small
-                // additional gap is needed on top of it. y stays at 0 (the
-                // label's own baseline, same as its first line) rather than
-                // shifted down, so the arrow/Ø sit level with the text
-                // instead of visibly sagging below it.
-                const lineStart = nodeLabelHalfWidth(node) + 2;
+                // additional gap is needed on top of it.
+                const lineStart = nodeLabelHalfWidth(node) + 4;
                 const lineEnd = lineStart + 14;
+                // y=0 is the label's text BASELINE, not its visual center —
+                // drawing the arrow there makes it sag below the glyphs
+                // instead of running through their middle. Shift the whole
+                // annotation up by the same fraction of font size already
+                // used elsewhere in this file for the same reason (the
+                // link-mode "pending" ring around a node, earlier in this file).
+                const vCenter = -fontSize * 0.3;
                 return (
-                  <g stroke="currentColor" strokeWidth={1.4} opacity={node.active ? 1 : INACTIVE_OPACITY}>
+                  <g
+                    stroke="currentColor"
+                    strokeWidth={1.4}
+                    opacity={node.active ? 1 : INACTIVE_OPACITY}
+                    transform={`translate(0, ${vCenter})`}
+                  >
                     <line x1={lineStart} y1={0} x2={lineEnd} y2={0} />
                     <path
                       d={`M ${lineStart} 0 L ${lineStart + 6} -4 L ${lineStart + 6} 4 Z`}
