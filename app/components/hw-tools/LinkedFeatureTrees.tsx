@@ -20,18 +20,40 @@ export interface LinkedFeatureTreesProps {
   mode: 'edit' | 'export';
   linkModeActive: boolean;
   pendingLinkStart: TreeEndpoint | null;
+  insertModeActive: boolean;
+  delinkingModeActive: boolean;
   onToggleNode: (treeId: string, id: TreeNodeId) => void;
   onCycleLeaf: (treeId: string, id: TreeNodeId) => void;
   onReorderSibling: (treeId: string, parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) => void;
   onNodeClick: (treeId: string, id: TreeNodeId) => void;
   onRemoveLink: (linkId: string) => void;
+  onToggleInserted: (treeId: string, id: TreeNodeId) => void;
+  onToggleDelinked: (treeId: string, childId: TreeNodeId) => void;
 }
+
+const DELETED_OPACITY = 0.35;
 
 /** Horizontal breathing room between adjacent trees. */
 const TREE_GAP = 60;
 
 const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(function LinkedFeatureTrees(
-  { trees, links, label, mode, linkModeActive, pendingLinkStart, onToggleNode, onCycleLeaf, onReorderSibling, onNodeClick, onRemoveLink },
+  {
+    trees,
+    links,
+    label,
+    mode,
+    linkModeActive,
+    pendingLinkStart,
+    insertModeActive,
+    delinkingModeActive,
+    onToggleNode,
+    onCycleLeaf,
+    onReorderSibling,
+    onNodeClick,
+    onRemoveLink,
+    onToggleInserted,
+    onToggleDelinked,
+  },
   ref,
 ) {
   const interactive = mode === 'edit';
@@ -80,22 +102,45 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
       aria-label={label}
       className="text-gray-900 dark:text-gray-100"
     >
-      {positioned.map(({ tree, layout, visibleNodes, offsetX }) => (
-        <TreeGroup
-          key={tree.id}
-          layout={layout}
-          visibleNodes={visibleNodes}
-          offsetX={offsetX}
-          interactive={interactive}
-          linkModeActive={linkModeActive}
-          isPendingLinkNode={(nodeId: TreeNodeId) => isPendingLinkNode(tree.id, nodeId)}
-          onToggleNode={(id) => onToggleNode(tree.id, id)}
-          onCycleLeaf={(id) => onCycleLeaf(tree.id, id)}
-          onReorderSibling={(parentId, childId, targetIndex) => onReorderSibling(tree.id, parentId, childId, targetIndex)}
-          onNodeClick={(id) => onNodeClick(tree.id, id)}
-          svgElRef={svgElRef}
-        />
-      ))}
+      {positioned.map(({ tree, layout, visibleNodes, offsetX }) => {
+        const root = visibleNodes.find((n) => n.parent === null);
+        return (
+          <g key={tree.id} opacity={tree.deleted ? DELETED_OPACITY : 1} className="transition-all duration-300 ease-out">
+            <TreeGroup
+              layout={layout}
+              visibleNodes={visibleNodes}
+              offsetX={offsetX}
+              interactive={interactive}
+              linkModeActive={linkModeActive}
+              isPendingLinkNode={(nodeId: TreeNodeId) => isPendingLinkNode(tree.id, nodeId)}
+              insertedNodes={tree.insertedNodes}
+              delinkedEdges={tree.delinkedEdges}
+              insertModeActive={insertModeActive}
+              delinkingModeActive={delinkingModeActive}
+              onToggleNode={(id) => onToggleNode(tree.id, id)}
+              onCycleLeaf={(id) => onCycleLeaf(tree.id, id)}
+              onReorderSibling={(parentId, childId, targetIndex) => onReorderSibling(tree.id, parentId, childId, targetIndex)}
+              onNodeClick={(id) => onNodeClick(tree.id, id)}
+              onToggleInserted={(id) => onToggleInserted(tree.id, id)}
+              onToggleDelinked={(childId) => onToggleDelinked(tree.id, childId)}
+              svgElRef={svgElRef}
+            />
+            {tree.deleted && root && (
+              <g
+                stroke="currentColor"
+                strokeWidth={1.4}
+                transform={`translate(${root.x + offsetX}, ${anchorTop(root) - 14})`}
+              >
+                <line x1={0} y1={0} x2={20} y2={0} />
+                <path d="M 20 0 L 14 -4 L 14 4 Z" fill="currentColor" stroke="none" />
+                <text x={28} y={5} fontSize={14} fontFamily="sans-serif" stroke="none" fill="currentColor">
+                  Ø
+                </text>
+              </g>
+            )}
+          </g>
+        );
+      })}
 
       {links.map((link) => {
         const from = resolveEndpoint(link.from);

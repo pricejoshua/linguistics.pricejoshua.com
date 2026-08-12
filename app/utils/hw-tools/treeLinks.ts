@@ -21,10 +21,35 @@ export interface TreeInstance {
   order: SiblingOrder;
   /** "Saved" — renders only this tree's active nodes, tightly laid out, instead of the full topology. Toggling/linking still work; there's just nothing inactive left to click on until it's edited again. */
   collapsed: boolean;
+  /** Whole segment marked deleted — rendered with an arrow to Ø near the root, and the whole tree dimmed. Whole-tree only, not per-feature. */
+  deleted: boolean;
+  /** Nodes marked "inserted from Ø" — rendered with a dotted edge to their parent and a Ø-with-arrow annotation. */
+  insertedNodes: Set<TreeNodeId>;
+  /** Parent-child edges marked delinking, keyed by the child's id (a non-root node has exactly one parent, so the child id uniquely identifies the edge) — rendered with the double-tick crossing mark. */
+  delinkedEdges: Set<TreeNodeId>;
 }
 
 export function emptyTreeInstance(): TreeInstance {
-  return { id: generateId(), state: emptyTreeState(), order: emptySiblingOrder(), collapsed: false };
+  return {
+    id: generateId(),
+    state: emptyTreeState(),
+    order: emptySiblingOrder(),
+    collapsed: false,
+    deleted: false,
+    insertedNodes: new Set(),
+    delinkedEdges: new Set(),
+  };
+}
+
+/** Drops a set of node ids from a tree's inserted/delinked markings — used when those nodes deactivate (directly or via cascade) so a marking can never reference a node that's no longer part of the tree. */
+export function pruneAnnotations(tree: TreeInstance, deactivatedIds: TreeNodeId[]): TreeInstance {
+  if (deactivatedIds.length === 0) return tree;
+  const deactivated = new Set(deactivatedIds);
+  return {
+    ...tree,
+    insertedNodes: new Set([...tree.insertedNodes].filter((id) => !deactivated.has(id))),
+    delinkedEdges: new Set([...tree.delinkedEdges].filter((id) => !deactivated.has(id))),
+  };
 }
 
 export interface TreeEndpoint {

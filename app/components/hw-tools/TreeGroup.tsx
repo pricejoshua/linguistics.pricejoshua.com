@@ -16,18 +16,50 @@ export interface TreeGroupProps {
   interactive: boolean;
   linkModeActive: boolean;
   isPendingLinkNode: (nodeId: TreeNodeId) => boolean;
+  /** Nodes marked "inserted from Ø" — dotted edge to parent, Ø-with-arrow annotation. */
+  insertedNodes: ReadonlySet<TreeNodeId>;
+  /** Parent-child edges marked delinking, keyed by the child's id. */
+  delinkedEdges: ReadonlySet<TreeNodeId>;
+  insertModeActive: boolean;
+  delinkingModeActive: boolean;
   onToggleNode: (id: TreeNodeId) => void;
   onCycleLeaf: (id: TreeNodeId) => void;
   onReorderSibling: (parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) => void;
   onNodeClick: (id: TreeNodeId) => void;
+  onToggleInserted: (id: TreeNodeId) => void;
+  onToggleDelinked: (childId: TreeNodeId) => void;
   /** The shared outer <svg> — drag needs its screen-to-user-space transform, not any single tree's. */
   svgElRef: React.RefObject<SVGSVGElement | null>;
 }
 
 const INACTIVE_OPACITY = 0.25;
 const LINK_PENDING_COLOR = '#2563eb'; // tailwind blue-600, matches the app's existing accent usage
+const DELINK_COLOR = '#dc2626'; // tailwind red-600 — visually distinct from normal structure
 /** Screen-pixel movement before a pointer-down becomes a drag rather than a click. */
 const DRAG_THRESHOLD = 5;
+
+/** Two short parallel ticks perpendicular to the edge, crossing its midpoint — the standard delinking mark. */
+function delinkTickPath(x1: number, y1: number, x2: number, y2: number): string {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  const px = -uy; // perpendicular unit vector
+  const py = ux;
+  const midX = (x1 + x2) / 2;
+  const midY = (y1 + y2) / 2;
+  const tickHalf = 6;
+  const gap = 3;
+  const c1x = midX - (gap / 2) * ux;
+  const c1y = midY - (gap / 2) * uy;
+  const c2x = midX + (gap / 2) * ux;
+  const c2y = midY + (gap / 2) * uy;
+  return (
+    `M ${c1x - tickHalf * px} ${c1y - tickHalf * py} L ${c1x + tickHalf * px} ${c1y + tickHalf * py} ` +
+    `M ${c2x - tickHalf * px} ${c2y - tickHalf * py} L ${c2x + tickHalf * px} ${c2y + tickHalf * py}`
+  );
+}
 
 interface DragState {
   id: TreeNodeId;
@@ -54,10 +86,16 @@ export default function TreeGroup({
   interactive,
   linkModeActive,
   isPendingLinkNode,
+  insertedNodes,
+  delinkedEdges,
+  insertModeActive,
+  delinkingModeActive,
   onToggleNode,
   onCycleLeaf,
   onReorderSibling,
   onNodeClick,
+  onToggleInserted,
+  onToggleDelinked,
   svgElRef,
 }: TreeGroupProps) {
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -141,16 +179,44 @@ export default function TreeGroup({
           const edgeActive = node.active && parent.active;
           if (!interactive && !edgeActive) return null;
           const beingDragged = drag?.id === node.id;
+          const x1 = parent.x;
+          const y1 = anchorBottom(parent);
+          const x2 = beingDragged ? drag.x : node.x;
+          const y2 = beingDragged ? drag.y - 12 : anchorTop(node);
+          const inserted = insertedNodes.has(node.id);
+          const delinked = delinkedEdges.has(node.id);
           return (
-            <line
-              key={`edge-${node.id}`}
-              x1={parent.x}
-              y1={anchorBottom(parent)}
-              x2={beingDragged ? drag.x : node.x}
-              y2={beingDragged ? drag.y - 12 : anchorTop(node)}
-              opacity={edgeActive ? 1 : INACTIVE_OPACITY}
-              className={beingDragged ? undefined : 'transition-all duration-300 ease-out'}
-            />
+            <g key={`edge-${node.id}`}>
+              <line
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                strokeDasharray={inserted ? '4 3' : undefined}
+                opacity={edgeActive ? 1 : INACTIVE_OPACITY}
+                className={beingDragged ? undefined : 'transition-all duration-300 ease-out'}
+              />
+              {delinked && !beingDragged && (
+                <path d={delinkTickPath(x1, y1, x2, y2)} stroke={DELINK_COLOR} strokeWidth={1.8} />
+              )}
+              {interactive && delinkingModeActive && edgeActive && !beingDragged && (
+                <line
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke="transparent"
+                  strokeWidth={12}
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleDelinked(node.id);
+                  }}
+                >
+                  <title>{delinked ? 'Undo delinking' : 'Mark delinking'}</title>
+                </line>
+              )}
+            </g>
           );
         })}
       </g>
@@ -161,9 +227,14 @@ export default function TreeGroup({
           const isLeaf = node.kind === 'leaf';
           const fontSize = fontSizeFor(node, node.active);
           const pending = linkModeActive && isPendingLinkNode(node.id);
+          const inserted = insertedNodes.has(node.id);
           const handleActivate = () => {
             if (linkModeActive) {
               onNodeClick(node.id);
+              return;
+            }
+            if (insertModeActive) {
+              if (node.active && node.parent !== null) onToggleInserted(node.id);
               return;
             }
             if (cyclable) onCycleLeaf(node.id);
@@ -257,6 +328,15 @@ export default function TreeGroup({
                   {line}
                 </text>
               ))}
+              {inserted && (
+                <g stroke="currentColor" strokeWidth={1.4} opacity={node.active ? 1 : INACTIVE_OPACITY}>
+                  <line x1={16} y1={0} x2={30} y2={0} />
+                  <path d="M 16 0 L 22 -4 L 22 4 Z" fill="currentColor" stroke="none" />
+                  <text x={38} y={5} fontSize={fontSize} fontFamily="sans-serif" stroke="none" fill="currentColor">
+                    Ø
+                  </text>
+                </g>
+              )}
             </g>
           );
         })}

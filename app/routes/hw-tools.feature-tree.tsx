@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Link as LinkIcon, Plus } from 'lucide-react';
+import { Link as LinkIcon, Plus, Scissors } from 'lucide-react';
 import LinkedFeatureTrees from '../components/hw-tools/LinkedFeatureTrees';
 import ExportControls from '../components/hw-tools/ExportControls';
 import { toggleNode, cycleLeafValue, activeNodeIds } from '../utils/hw-tools/treeBuilderState';
@@ -11,16 +11,19 @@ import {
   removeLink,
   removeLinksForNode,
   removeLinksForTree,
+  pruneAnnotations,
   type TreeInstance,
   type TreeEndpoint,
   type TreeLink,
 } from '../utils/hw-tools/treeLinks';
 import type { TreeNodeId } from '../data/hw-tools/featureTreeTopology';
 
+type AnnotationMode = 'none' | 'link' | 'insert' | 'delinking';
+
 export default function FeatureTreeTool() {
   const [trees, setTrees] = useState<TreeInstance[]>(() => [emptyTreeInstance()]);
   const [links, setLinks] = useState<TreeLink[]>([]);
-  const [linkModeActive, setLinkModeActive] = useState(false);
+  const [mode, setMode] = useState<AnnotationMode>('none');
   const [pendingLinkStart, setPendingLinkStart] = useState<TreeEndpoint | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -36,23 +39,31 @@ export default function FeatureTreeTool() {
     return node ? depthOf(node) : null;
   };
 
-  const handleToggle = (treeId: string, id: TreeNodeId) => {
+  /**
+   * Applies a state-changing update to one tree, then cleans up anything
+   * that referenced a node the update just deactivated — including nodes
+   * deactivated indirectly via cascade (deactivating a parent deactivates
+   * its whole active subtree), not just the one directly clicked. Links,
+   * "inserted from Ø" markings, and delinking markings can all reference a
+   * node, so all three get swept together here.
+   */
+  const applyStateChange = (treeId: string, updater: (state: TreeInstance['state']) => TreeInstance['state']) => {
     const tree = findTree(treeId);
     if (!tree) return;
-    const nextState = toggleNode(tree.state, id);
-    const nowInactive = !activeNodeIds(nextState).has(id);
-    setTrees((ts) => ts.map((t) => (t.id === treeId ? { ...t, state: nextState } : t)));
-    if (nowInactive) setLinks((ls) => removeLinksForNode(ls, treeId, id));
+    const prevActive = activeNodeIds(tree.state);
+    const nextState = updater(tree.state);
+    const nextActive = activeNodeIds(nextState);
+    const deactivated = [...prevActive].filter((id) => !nextActive.has(id));
+    setTrees((ts) =>
+      ts.map((t) => (t.id === treeId ? pruneAnnotations({ ...t, state: nextState }, deactivated) : t)),
+    );
+    if (deactivated.length > 0) {
+      setLinks((ls) => deactivated.reduce((acc, id) => removeLinksForNode(acc, treeId, id), ls));
+    }
   };
 
-  const handleCycle = (treeId: string, id: TreeNodeId) => {
-    const tree = findTree(treeId);
-    if (!tree) return;
-    const nextState = cycleLeafValue(tree.state, id);
-    const nowInactive = !activeNodeIds(nextState).has(id);
-    setTrees((ts) => ts.map((t) => (t.id === treeId ? { ...t, state: nextState } : t)));
-    if (nowInactive) setLinks((ls) => removeLinksForNode(ls, treeId, id));
-  };
+  const handleToggle = (treeId: string, id: TreeNodeId) => applyStateChange(treeId, (state) => toggleNode(state, id));
+  const handleCycle = (treeId: string, id: TreeNodeId) => applyStateChange(treeId, (state) => cycleLeafValue(state, id));
 
   const handleReorder = (treeId: string, parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) => {
     setTrees((ts) =>
@@ -66,6 +77,9 @@ export default function FeatureTreeTool() {
 
   const handleToggleCollapse = (treeId: string) =>
     setTrees((ts) => ts.map((t) => (t.id === treeId ? { ...t, collapsed: !t.collapsed } : t)));
+
+  const handleToggleDeleted = (treeId: string) =>
+    setTrees((ts) => ts.map((t) => (t.id === treeId ? { ...t, deleted: !t.deleted } : t)));
 
   const handleRemoveLastTree = () => {
     if (trees.length <= 1) return;
@@ -106,8 +120,30 @@ export default function FeatureTreeTool() {
 
   const handleRemoveLink = (linkId: string) => setLinks((ls) => removeLink(ls, linkId));
 
-  const handleToggleLinkMode = () => {
-    setLinkModeActive((active) => !active);
+  const handleToggleInserted = (treeId: string, nodeId: TreeNodeId) =>
+    setTrees((ts) =>
+      ts.map((t) => {
+        if (t.id !== treeId) return t;
+        const next = new Set(t.insertedNodes);
+        if (next.has(nodeId)) next.delete(nodeId);
+        else next.add(nodeId);
+        return { ...t, insertedNodes: next };
+      }),
+    );
+
+  const handleToggleDelinked = (treeId: string, childId: TreeNodeId) =>
+    setTrees((ts) =>
+      ts.map((t) => {
+        if (t.id !== treeId) return t;
+        const next = new Set(t.delinkedEdges);
+        if (next.has(childId)) next.delete(childId);
+        else next.add(childId);
+        return { ...t, delinkedEdges: next };
+      }),
+    );
+
+  const setModeExclusive = (next: AnnotationMode) => {
+    setMode((current) => (current === next ? 'none' : next));
     setPendingLinkStart(null);
     setLinkError(null);
   };
@@ -115,7 +151,7 @@ export default function FeatureTreeTool() {
   const handleClear = () => {
     setTrees([emptyTreeInstance()]);
     setLinks([]);
-    setLinkModeActive(false);
+    setMode('none');
     setPendingLinkStart(null);
     setLinkError(null);
   };
@@ -135,7 +171,12 @@ export default function FeatureTreeTool() {
         </p>
         <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
           For rules spanning multiple segments, add another tree and use Link mode to draw an association
-          line between an active node in one tree and an active node in another.
+          line between an active node in one tree and an active node in another, one level apart.
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+          Use Insert to mark a feature as added from Ø (dotted edge, Ø→ annotation), Delink to mark a
+          connection as severed (⧸⧸ across the edge), and a tree's own Delete/Restore button to mark a whole
+          segment deleted (→Ø near its root).
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           Nothing here is saved — copy your work before navigating away.
@@ -144,15 +185,28 @@ export default function FeatureTreeTool() {
 
       <div className="flex flex-wrap items-center gap-2">
         {trees.map((tree, i) => (
-          <button
-            key={tree.id}
-            type="button"
-            onClick={() => handleToggleCollapse(tree.id)}
-            className="px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            {trees.length > 1 ? `Tree ${i + 1}: ` : ''}
-            {tree.collapsed ? 'Edit' : 'Save'}
-          </button>
+          <span key={tree.id} className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => handleToggleCollapse(tree.id)}
+              className="px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              {trees.length > 1 ? `Tree ${i + 1}: ` : ''}
+              {tree.collapsed ? 'Edit' : 'Save'}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleToggleDeleted(tree.id)}
+              aria-pressed={tree.deleted}
+              className={`px-3 py-1 text-sm rounded-full ${
+                tree.deleted
+                  ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                  : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {tree.deleted ? 'Restore' : 'Delete'}
+            </button>
+          </span>
         ))}
       </div>
 
@@ -161,13 +215,17 @@ export default function FeatureTreeTool() {
           trees={trees}
           links={links}
           mode="edit"
-          linkModeActive={linkModeActive}
+          linkModeActive={mode === 'link'}
           pendingLinkStart={pendingLinkStart}
+          insertModeActive={mode === 'insert'}
+          delinkingModeActive={mode === 'delinking'}
           onToggleNode={handleToggle}
           onCycleLeaf={handleCycle}
           onReorderSibling={handleReorder}
           onNodeClick={handleNodeClickInLinkMode}
           onRemoveLink={handleRemoveLink}
+          onToggleInserted={handleToggleInserted}
+          onToggleDelinked={handleToggleDelinked}
           label="Feature geometry trees being built"
         />
       </div>
@@ -190,23 +248,57 @@ export default function FeatureTreeTool() {
         </button>
         <button
           type="button"
-          onClick={handleToggleLinkMode}
+          onClick={() => setModeExclusive('link')}
           disabled={trees.length < 2}
-          aria-pressed={linkModeActive}
+          aria-pressed={mode === 'link'}
           className={`flex items-center gap-1 px-4 py-2 rounded disabled:opacity-40 disabled:cursor-not-allowed ${
-            linkModeActive
+            mode === 'link'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700'
           }`}
         >
-          <LinkIcon className="h-4 w-4" /> {linkModeActive ? 'Linking…' : 'Link'}
+          <LinkIcon className="h-4 w-4" /> {mode === 'link' ? 'Linking…' : 'Link'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setModeExclusive('insert')}
+          aria-pressed={mode === 'insert'}
+          className={`flex items-center gap-1 px-4 py-2 rounded ${
+            mode === 'insert'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700'
+          }`}
+        >
+          <Plus className="h-4 w-4" /> {mode === 'insert' ? 'Marking insertions…' : 'Insert'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setModeExclusive('delinking')}
+          aria-pressed={mode === 'delinking'}
+          className={`flex items-center gap-1 px-4 py-2 rounded ${
+            mode === 'delinking'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700'
+          }`}
+        >
+          <Scissors className="h-4 w-4" /> {mode === 'delinking' ? 'Marking delinking…' : 'Delink'}
         </button>
       </div>
 
-      {linkModeActive && (
+      {mode === 'link' && (
         <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3">
           Click an active node, then click an active node one level up or down in another tree to link them.
           Click an existing link to remove it.
+        </p>
+      )}
+      {mode === 'insert' && (
+        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3">
+          Click an active node to mark it inserted from Ø (or click again to undo).
+        </p>
+      )}
+      {mode === 'delinking' && (
+        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3">
+          Click an edge between two active nodes to mark it delinking (or click again to undo).
         </p>
       )}
       {linkError && <p className="text-xs text-red-600 dark:text-red-400 -mt-3">{linkError}</p>}
@@ -249,11 +341,15 @@ export default function FeatureTreeTool() {
           mode="export"
           linkModeActive={false}
           pendingLinkStart={null}
+          insertModeActive={false}
+          delinkingModeActive={false}
           onToggleNode={() => {}}
           onCycleLeaf={() => {}}
           onReorderSibling={() => {}}
           onNodeClick={() => {}}
           onRemoveLink={() => {}}
+          onToggleInserted={() => {}}
+          onToggleDelinked={() => {}}
           label="Feature geometry trees export"
         />
       </div>
