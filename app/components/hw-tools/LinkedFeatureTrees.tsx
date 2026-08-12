@@ -22,6 +22,7 @@ export interface LinkedFeatureTreesProps {
   pendingLinkStart: TreeEndpoint | null;
   insertModeActive: boolean;
   delinkingModeActive: boolean;
+  deleteModeActive: boolean;
   onToggleNode: (treeId: string, id: TreeNodeId) => void;
   onCycleLeaf: (treeId: string, id: TreeNodeId) => void;
   onReorderSibling: (treeId: string, parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) => void;
@@ -29,9 +30,8 @@ export interface LinkedFeatureTreesProps {
   onRemoveLink: (linkId: string) => void;
   onToggleInserted: (treeId: string, id: TreeNodeId) => void;
   onToggleDelinked: (treeId: string, childId: TreeNodeId) => void;
+  onToggleTreeDeleted: (treeId: string) => void;
 }
-
-const DELETED_OPACITY = 0.35;
 
 /** Horizontal breathing room between adjacent trees. */
 const TREE_GAP = 60;
@@ -46,6 +46,7 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
     pendingLinkStart,
     insertModeActive,
     delinkingModeActive,
+    deleteModeActive,
     onToggleNode,
     onCycleLeaf,
     onReorderSibling,
@@ -53,6 +54,7 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
     onRemoveLink,
     onToggleInserted,
     onToggleDelinked,
+    onToggleTreeDeleted,
   },
   ref,
 ) {
@@ -105,7 +107,7 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
       {positioned.map(({ tree, layout, visibleNodes, offsetX }) => {
         const root = visibleNodes.find((n) => n.parent === null);
         return (
-          <g key={tree.id} opacity={tree.deleted ? DELETED_OPACITY : 1} className="transition-all duration-300 ease-out">
+          <g key={tree.id}>
             <TreeGroup
               layout={layout}
               visibleNodes={visibleNodes}
@@ -117,14 +119,17 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
               delinkedEdges={tree.delinkedEdges}
               insertModeActive={insertModeActive}
               delinkingModeActive={delinkingModeActive}
+              deleteModeActive={deleteModeActive}
               onToggleNode={(id) => onToggleNode(tree.id, id)}
               onCycleLeaf={(id) => onCycleLeaf(tree.id, id)}
               onReorderSibling={(parentId, childId, targetIndex) => onReorderSibling(tree.id, parentId, childId, targetIndex)}
               onNodeClick={(id) => onNodeClick(tree.id, id)}
               onToggleInserted={(id) => onToggleInserted(tree.id, id)}
               onToggleDelinked={(childId) => onToggleDelinked(tree.id, childId)}
+              onToggleTreeDeleted={() => onToggleTreeDeleted(tree.id)}
               svgElRef={svgElRef}
             />
+            {/* Marked deleted, but still shown fully active — only the arrow-to-Ø near the root indicates the rule deletes this segment. */}
             {tree.deleted && root && (
               <g
                 stroke="currentColor"

@@ -22,12 +22,15 @@ export interface TreeGroupProps {
   delinkedEdges: ReadonlySet<TreeNodeId>;
   insertModeActive: boolean;
   delinkingModeActive: boolean;
+  /** Whole-tree "marked deleted" mode — clicking ANY node in this tree toggles it, since the marking applies to the whole segment, not a specific node. */
+  deleteModeActive: boolean;
   onToggleNode: (id: TreeNodeId) => void;
   onCycleLeaf: (id: TreeNodeId) => void;
   onReorderSibling: (parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) => void;
   onNodeClick: (id: TreeNodeId) => void;
   onToggleInserted: (id: TreeNodeId) => void;
   onToggleDelinked: (childId: TreeNodeId) => void;
+  onToggleTreeDeleted: () => void;
   /** The shared outer <svg> — drag needs its screen-to-user-space transform, not any single tree's. */
   svgElRef: React.RefObject<SVGSVGElement | null>;
 }
@@ -89,12 +92,14 @@ export default function TreeGroup({
   delinkedEdges,
   insertModeActive,
   delinkingModeActive,
+  deleteModeActive,
   onToggleNode,
   onCycleLeaf,
   onReorderSibling,
   onNodeClick,
   onToggleInserted,
   onToggleDelinked,
+  onToggleTreeDeleted,
   svgElRef,
 }: TreeGroupProps) {
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -234,6 +239,10 @@ export default function TreeGroup({
             }
             if (insertModeActive) {
               if (node.active && node.parent !== null) onToggleInserted(node.id);
+              return;
+            }
+            if (deleteModeActive) {
+              onToggleTreeDeleted();
               return;
             }
             if (cyclable) onCycleLeaf(node.id);
