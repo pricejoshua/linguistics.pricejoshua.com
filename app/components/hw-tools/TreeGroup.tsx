@@ -265,36 +265,50 @@ export default function TreeGroup({
       {interactive && (
         <g fill="currentColor">
           {visibleNodes.map((node) => {
+            // Reordering only has a visible effect among ACTIVE siblings —
+            // the exported/pruned layout only keeps active nodes, so
+            // swapping past an inactive one changes nothing a student can
+            // see. Arrows are scoped to active-sibling swaps so every click
+            // does something, and to active nodes so there's nothing to
+            // click on a node whose position doesn't matter yet.
+            if (!node.active) return null;
             const parentId = node.parent;
             if (!parentId) return null;
-            const siblings = siblingsOf(parentId);
-            if (siblings.length < 2) return null;
-            const currentIndex = siblings.findIndex((s) => s.id === node.id);
+            const activeSiblings = siblingsOf(parentId).filter((s) => s.active);
+            const currentIndex = activeSiblings.findIndex((s) => s.id === node.id);
             if (currentIndex === -1) return null;
+            const leftTarget = currentIndex > 0 ? activeSiblings[currentIndex - 1] : null;
+            const rightTarget = currentIndex < activeSiblings.length - 1 ? activeSiblings[currentIndex + 1] : null;
+            if (!leftTarget && !rightTarget) return null;
             const arrowY = anchorBottom(node) + 10;
-            const opacity = node.active ? 0.55 : 0.3;
 
             return (
-              <g key={`reorder-${node.id}`} opacity={opacity} className="transition-all duration-300 ease-out">
-                {currentIndex > 0 && (
+              <g key={`reorder-${node.id}`} opacity={0.55} className="transition-all duration-300 ease-out">
+                {leftTarget && (
                   <path
                     d={`M ${node.x - 10} ${arrowY - 5} L ${node.x - 18} ${arrowY} L ${node.x - 10} ${arrowY + 5} Z`}
                     className="cursor-pointer hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation();
-                      reorder(parentId, node.id, currentIndex - 1);
+                      // Jump straight to the active sibling's own slot — not
+                      // just one slot over in the full list, which could
+                      // land short of it (or not move it at all) if inactive
+                      // siblings sit between them.
+                      const fullIndex = siblingsOf(parentId).findIndex((s) => s.id === leftTarget.id);
+                      if (fullIndex !== -1) reorder(parentId, node.id, fullIndex);
                     }}
                   >
                     <title>Move left</title>
                   </path>
                 )}
-                {currentIndex < siblings.length - 1 && (
+                {rightTarget && (
                   <path
                     d={`M ${node.x + 10} ${arrowY - 5} L ${node.x + 18} ${arrowY} L ${node.x + 10} ${arrowY + 5} Z`}
                     className="cursor-pointer hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation();
-                      reorder(parentId, node.id, currentIndex + 1);
+                      const fullIndex = siblingsOf(parentId).findIndex((s) => s.id === rightTarget.id);
+                      if (fullIndex !== -1) reorder(parentId, node.id, fullIndex);
                     }}
                   >
                     <title>Move right</title>
