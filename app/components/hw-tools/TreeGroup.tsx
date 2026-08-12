@@ -34,7 +34,6 @@ export interface TreeGroupProps {
 
 const INACTIVE_OPACITY = 0.25;
 const LINK_PENDING_COLOR = '#2563eb'; // tailwind blue-600, matches the app's existing accent usage
-const DELINK_COLOR = '#dc2626'; // tailwind red-600 — visually distinct from normal structure
 /** Screen-pixel movement before a pointer-down becomes a drag rather than a click. */
 const DRAG_THRESHOLD = 5;
 
@@ -197,7 +196,7 @@ export default function TreeGroup({
                 className={beingDragged ? undefined : 'transition-all duration-300 ease-out'}
               />
               {delinked && !beingDragged && (
-                <path d={delinkTickPath(x1, y1, x2, y2)} stroke={DELINK_COLOR} strokeWidth={1.8} />
+                <path d={delinkTickPath(x1, y1, x2, y2)} stroke="currentColor" strokeWidth={1.8} />
               )}
               {interactive && delinkingModeActive && edgeActive && !beingDragged && (
                 <line
