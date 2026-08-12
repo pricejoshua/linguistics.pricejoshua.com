@@ -208,6 +208,11 @@ export function computePrunedLayout(state: TreeBuilderState, order?: SiblingOrde
   return out;
 }
 
+/** How many tree levels down from the root this node sits — 0 for the root itself, 1 for its children, etc. */
+export function depthOf(node: LaidOutNode): number {
+  return Math.round((node.y - START_Y) / ROW_HEIGHT);
+}
+
 /** Bottom of a node's text block, in layout units — where an edge to a child leaves from. */
 export function anchorBottom(node: LaidOutNode): number {
   return node.y + (node.displayLabel.length - 1) * LINE_HEIGHT + 6;
@@ -218,11 +223,23 @@ export function anchorTop(node: LaidOutNode): number {
   return node.y - 12;
 }
 
-const BOX_PAD_X = 60;
+const BOX_PAD_X = 70;
 const BOX_PAD_TOP = 30;
 const BOX_PAD_BOTTOM = 20;
 
-/** Tight bounding box over a set of laid-out nodes, sized from each node's actual rendered extent. */
+/**
+ * Tight bounding box over a set of laid-out nodes, sized from each node's
+ * actual rendered extent. Deliberately does NOT clamp x/y to 0 — a node's
+ * own x is the midpoint of its children, which for a node near the left
+ * edge (e.g. the tree's leftmost branch) can easily sit close enough to 0
+ * that the label's left half extends into negative territory. Clamping the
+ * box's left edge to 0 while a label still draws further left than that
+ * silently cuts it off; an SVG viewBox with a negative min-x is completely
+ * valid, so there's no reason to clamp. (Multi-tree placement in
+ * LinkedFeatureTrees re-normalizes each tree's own box.x back to a shared
+ * left-to-right cursor regardless of sign, so a negative box.x here doesn't
+ * leak into where trees end up positioned relative to each other.)
+ */
 export function computeBoundingBox(nodes: LaidOutNode[]): { x: number; y: number; width: number; height: number } {
   if (nodes.length === 0) {
     return { x: 0, y: 0, width: MIN_LABEL_WIDTH, height: ROW_HEIGHT };
@@ -232,9 +249,9 @@ export function computeBoundingBox(nodes: LaidOutNode[]): { x: number; y: number
   const top = Math.min(...nodes.map(anchorTop)) - BOX_PAD_TOP;
   const bottom = Math.max(...nodes.map(anchorBottom)) + BOX_PAD_BOTTOM;
   return {
-    x: Math.max(0, left),
-    y: Math.max(0, top),
-    width: Math.max(right - Math.max(0, left), 1),
-    height: Math.max(bottom - Math.max(0, top), 1),
+    x: left,
+    y: top,
+    width: Math.max(right - left, 1),
+    height: Math.max(bottom - top, 1),
   };
 }

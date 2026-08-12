@@ -4,7 +4,7 @@ import LinkedFeatureTrees from '../components/hw-tools/LinkedFeatureTrees';
 import ExportControls from '../components/hw-tools/ExportControls';
 import { toggleNode, cycleLeafValue, activeNodeIds } from '../utils/hw-tools/treeBuilderState';
 import { reorderSibling } from '../utils/hw-tools/treeOrder';
-import { naturalChildOrder } from '../utils/hw-tools/treeLayout';
+import { naturalChildOrder, computeTreeLayout, depthOf } from '../utils/hw-tools/treeLayout';
 import {
   emptyTreeInstance,
   createLink,
@@ -22,10 +22,19 @@ export default function FeatureTreeTool() {
   const [links, setLinks] = useState<TreeLink[]>([]);
   const [linkModeActive, setLinkModeActive] = useState(false);
   const [pendingLinkStart, setPendingLinkStart] = useState<TreeEndpoint | null>(null);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const exportRef = useRef<SVGSVGElement>(null);
 
   const findTree = (treeId: string) => trees.find((t) => t.id === treeId);
+
+  /** Depth of a node within its own tree (0 = root), for the "one level apart" link constraint. */
+  const depthOfEndpoint = (endpoint: TreeEndpoint): number | null => {
+    const tree = findTree(endpoint.treeId);
+    if (!tree) return null;
+    const node = computeTreeLayout(tree.state, tree.order).get(endpoint.nodeId);
+    return node ? depthOf(node) : null;
+  };
 
   const handleToggle = (treeId: string, id: TreeNodeId) => {
     const tree = findTree(treeId);
@@ -55,6 +64,9 @@ export default function FeatureTreeTool() {
 
   const handleAddTree = () => setTrees((ts) => [...ts, emptyTreeInstance()]);
 
+  const handleToggleCollapse = (treeId: string) =>
+    setTrees((ts) => ts.map((t) => (t.id === treeId ? { ...t, collapsed: !t.collapsed } : t)));
+
   const handleRemoveLastTree = () => {
     if (trees.length <= 1) return;
     const last = trees[trees.length - 1];
@@ -66,6 +78,7 @@ export default function FeatureTreeTool() {
   const handleNodeClickInLinkMode = (treeId: string, nodeId: TreeNodeId) => {
     const tree = findTree(treeId);
     if (!tree || !activeNodeIds(tree.state).has(nodeId)) return; // only active nodes are linkable
+    setLinkError(null);
 
     if (!pendingLinkStart) {
       setPendingLinkStart({ treeId, nodeId });
@@ -76,7 +89,18 @@ export default function FeatureTreeTool() {
       setPendingLinkStart({ treeId, nodeId });
       return;
     }
-    setLinks((ls) => [...ls, createLink(pendingLinkStart, { treeId, nodeId })]);
+    const endpoint = { treeId, nodeId };
+    const startDepth = depthOfEndpoint(pendingLinkStart);
+    const endDepth = depthOfEndpoint(endpoint);
+    if (startDepth === null || endDepth === null || Math.abs(startDepth - endDepth) !== 1) {
+      // Links only connect adjacent tiers — same convention as a normal
+      // parent/child edge, just spanning two trees. Leave the pending start
+      // in place so a different, valid target can be picked without
+      // restarting.
+      setLinkError('Links can only connect nodes one level apart.');
+      return;
+    }
+    setLinks((ls) => [...ls, createLink(pendingLinkStart, endpoint)]);
     setPendingLinkStart(null);
   };
 
@@ -85,6 +109,7 @@ export default function FeatureTreeTool() {
   const handleToggleLinkMode = () => {
     setLinkModeActive((active) => !active);
     setPendingLinkStart(null);
+    setLinkError(null);
   };
 
   const handleClear = () => {
@@ -92,6 +117,7 @@ export default function FeatureTreeTool() {
     setLinks([]);
     setLinkModeActive(false);
     setPendingLinkStart(null);
+    setLinkError(null);
   };
 
   const hasActiveNodes = trees.some((t) => activeNodeIds(t.state).size > 0);
@@ -114,6 +140,20 @@ export default function FeatureTreeTool() {
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           Nothing here is saved — copy your work before navigating away.
         </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        {trees.map((tree, i) => (
+          <button
+            key={tree.id}
+            type="button"
+            onClick={() => handleToggleCollapse(tree.id)}
+            className="px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            {trees.length > 1 ? `Tree ${i + 1}: ` : ''}
+            {tree.collapsed ? 'Edit' : 'Save'}
+          </button>
+        ))}
       </div>
 
       <div className="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded p-4">
@@ -165,10 +205,11 @@ export default function FeatureTreeTool() {
 
       {linkModeActive && (
         <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3">
-          Click an active node, then click an active node in another tree to link them. Click an existing link
-          to remove it.
+          Click an active node, then click an active node one level up or down in another tree to link them.
+          Click an existing link to remove it.
         </p>
       )}
+      {linkError && <p className="text-xs text-red-600 dark:text-red-400 -mt-3">{linkError}</p>}
 
       <div className="flex flex-wrap items-center gap-3">
         <ExportControls svgRef={exportRef} disabled={!hasActiveNodes} filenameBase="feature-tree" />
