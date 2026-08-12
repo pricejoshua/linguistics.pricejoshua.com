@@ -26,7 +26,7 @@ export const links: Route.LinksFunction = () => [
   // via `new Image()` loading a serialized SVG blob runs in an isolated
   // context that can't fetch external @font-face resources), so the hw-tools
   // SVG text uses generic "sans-serif"/"monospace" families rather than
-  // naming these fonts directly. See EditableFeatureTree.tsx / RuleDiagram.tsx.
+  // naming these fonts directly. See TreeGroup.tsx / RuleDiagram.tsx.
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Mono:wght@400..700&display=swap",

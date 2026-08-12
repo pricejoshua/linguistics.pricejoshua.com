@@ -1,26 +1,100 @@
 import { useRef, useState } from 'react';
-import EditableFeatureTree from '../components/hw-tools/EditableFeatureTree';
+import { Link as LinkIcon, Plus } from 'lucide-react';
+import LinkedFeatureTrees from '../components/hw-tools/LinkedFeatureTrees';
 import ExportControls from '../components/hw-tools/ExportControls';
-import { emptyTreeState, toggleNode, cycleLeafValue, activeNodeIds } from '../utils/hw-tools/treeBuilderState';
-import { emptySiblingOrder, reorderSibling } from '../utils/hw-tools/treeOrder';
+import { toggleNode, cycleLeafValue, activeNodeIds } from '../utils/hw-tools/treeBuilderState';
+import { reorderSibling } from '../utils/hw-tools/treeOrder';
 import { naturalChildOrder } from '../utils/hw-tools/treeLayout';
+import {
+  emptyTreeInstance,
+  createLink,
+  removeLink,
+  removeLinksForNode,
+  removeLinksForTree,
+  type TreeInstance,
+  type TreeEndpoint,
+  type TreeLink,
+} from '../utils/hw-tools/treeLinks';
 import type { TreeNodeId } from '../data/hw-tools/featureTreeTopology';
 
 export default function FeatureTreeTool() {
-  const [state, setState] = useState(emptyTreeState());
-  const [order, setOrder] = useState(emptySiblingOrder());
+  const [trees, setTrees] = useState<TreeInstance[]>(() => [emptyTreeInstance()]);
+  const [links, setLinks] = useState<TreeLink[]>([]);
+  const [linkModeActive, setLinkModeActive] = useState(false);
+  const [pendingLinkStart, setPendingLinkStart] = useState<TreeEndpoint | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const exportRef = useRef<SVGSVGElement>(null);
 
-  const handleToggle = (id: TreeNodeId) => setState((s) => toggleNode(s, id));
-  const handleCycle = (id: TreeNodeId) => setState((s) => cycleLeafValue(s, id));
-  const handleReorder = (parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) =>
-    setOrder((o) => reorderSibling(o, parentId, childId, targetIndex, naturalChildOrder(parentId)));
-  const handleClear = () => {
-    setState(emptyTreeState());
-    setOrder(emptySiblingOrder());
+  const findTree = (treeId: string) => trees.find((t) => t.id === treeId);
+
+  const handleToggle = (treeId: string, id: TreeNodeId) => {
+    const tree = findTree(treeId);
+    if (!tree) return;
+    const nextState = toggleNode(tree.state, id);
+    const nowInactive = !activeNodeIds(nextState).has(id);
+    setTrees((ts) => ts.map((t) => (t.id === treeId ? { ...t, state: nextState } : t)));
+    if (nowInactive) setLinks((ls) => removeLinksForNode(ls, treeId, id));
   };
-  const hasActiveNodes = activeNodeIds(state).size > 0;
+
+  const handleCycle = (treeId: string, id: TreeNodeId) => {
+    const tree = findTree(treeId);
+    if (!tree) return;
+    const nextState = cycleLeafValue(tree.state, id);
+    const nowInactive = !activeNodeIds(nextState).has(id);
+    setTrees((ts) => ts.map((t) => (t.id === treeId ? { ...t, state: nextState } : t)));
+    if (nowInactive) setLinks((ls) => removeLinksForNode(ls, treeId, id));
+  };
+
+  const handleReorder = (treeId: string, parentId: TreeNodeId, childId: TreeNodeId, targetIndex: number) => {
+    setTrees((ts) =>
+      ts.map((t) =>
+        t.id === treeId ? { ...t, order: reorderSibling(t.order, parentId, childId, targetIndex, naturalChildOrder(parentId)) } : t,
+      ),
+    );
+  };
+
+  const handleAddTree = () => setTrees((ts) => [...ts, emptyTreeInstance()]);
+
+  const handleRemoveLastTree = () => {
+    if (trees.length <= 1) return;
+    const last = trees[trees.length - 1];
+    setTrees((ts) => ts.slice(0, -1));
+    setLinks((ls) => removeLinksForTree(ls, last.id));
+    if (pendingLinkStart?.treeId === last.id) setPendingLinkStart(null);
+  };
+
+  const handleNodeClickInLinkMode = (treeId: string, nodeId: TreeNodeId) => {
+    const tree = findTree(treeId);
+    if (!tree || !activeNodeIds(tree.state).has(nodeId)) return; // only active nodes are linkable
+
+    if (!pendingLinkStart) {
+      setPendingLinkStart({ treeId, nodeId });
+      return;
+    }
+    if (pendingLinkStart.treeId === treeId) {
+      // Re-picking within the same tree — change the start rather than erroring.
+      setPendingLinkStart({ treeId, nodeId });
+      return;
+    }
+    setLinks((ls) => [...ls, createLink(pendingLinkStart, { treeId, nodeId })]);
+    setPendingLinkStart(null);
+  };
+
+  const handleRemoveLink = (linkId: string) => setLinks((ls) => removeLink(ls, linkId));
+
+  const handleToggleLinkMode = () => {
+    setLinkModeActive((active) => !active);
+    setPendingLinkStart(null);
+  };
+
+  const handleClear = () => {
+    setTrees([emptyTreeInstance()]);
+    setLinks([]);
+    setLinkModeActive(false);
+    setPendingLinkStart(null);
+  };
+
+  const hasActiveNodes = trees.some((t) => activeNodeIds(t.state).size > 0);
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -33,22 +107,68 @@ export default function FeatureTreeTool() {
           leaf to cycle its value: unspecified → + → − → unspecified. Drag a node left or right (or focus it
           and use the arrow keys) to swap it with its siblings.
         </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+          For rules spanning multiple segments, add another tree and use Link mode to draw an association
+          line between an active node in one tree and an active node in another.
+        </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           Nothing here is saved — copy your work before navigating away.
         </p>
       </div>
 
       <div className="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded p-4">
-        <EditableFeatureTree
-          state={state}
+        <LinkedFeatureTrees
+          trees={trees}
+          links={links}
+          mode="edit"
+          linkModeActive={linkModeActive}
+          pendingLinkStart={pendingLinkStart}
           onToggleNode={handleToggle}
           onCycleLeaf={handleCycle}
-          order={order}
           onReorderSibling={handleReorder}
-          label="Feature geometry tree being built"
-          mode="edit"
+          onNodeClick={handleNodeClickInLinkMode}
+          onRemoveLink={handleRemoveLink}
+          label="Feature geometry trees being built"
         />
       </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={handleAddTree}
+          className="flex items-center gap-1 px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+        >
+          <Plus className="h-4 w-4" /> Add Tree
+        </button>
+        <button
+          type="button"
+          onClick={handleRemoveLastTree}
+          disabled={trees.length <= 1}
+          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-700"
+        >
+          Remove Last Tree
+        </button>
+        <button
+          type="button"
+          onClick={handleToggleLinkMode}
+          disabled={trees.length < 2}
+          aria-pressed={linkModeActive}
+          className={`flex items-center gap-1 px-4 py-2 rounded disabled:opacity-40 disabled:cursor-not-allowed ${
+            linkModeActive
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700'
+          }`}
+        >
+          <LinkIcon className="h-4 w-4" /> {linkModeActive ? 'Linking…' : 'Link'}
+        </button>
+      </div>
+
+      {linkModeActive && (
+        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3">
+          Click an active node, then click an active node in another tree to link them. Click an existing link
+          to remove it.
+        </p>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         <ExportControls svgRef={exportRef} disabled={!hasActiveNodes} filenameBase="feature-tree" />
@@ -70,9 +190,10 @@ export default function FeatureTreeTool() {
       </div>
 
       {/*
-        Same tree, same ref used for export — the Preview toggle just decides
-        whether it's shown on screen. Always mounted (even when hidden) so
-        the ref is populated whenever the export buttons are clicked.
+        Same trees/links, same ref used for export — the Preview toggle just
+        decides whether it's shown on screen. Always mounted (even when
+        hidden) so the ref is populated whenever the export buttons are
+        clicked.
       */}
       <div className={previewOpen ? 'overflow-x-auto border border-gray-200 dark:border-gray-800 rounded p-4' : 'sr-only'} aria-hidden={!previewOpen}>
         {previewOpen && (
@@ -80,14 +201,19 @@ export default function FeatureTreeTool() {
             This is exactly what gets copied/downloaded — only active nodes, laid out fresh.
           </p>
         )}
-        <EditableFeatureTree
+        <LinkedFeatureTrees
           ref={exportRef}
-          state={state}
+          trees={trees}
+          links={links}
+          mode="export"
+          linkModeActive={false}
+          pendingLinkStart={null}
           onToggleNode={() => {}}
           onCycleLeaf={() => {}}
-          order={order}
-          label="Feature geometry tree export"
-          mode="export"
+          onReorderSibling={() => {}}
+          onNodeClick={() => {}}
+          onRemoveLink={() => {}}
+          label="Feature geometry trees export"
         />
       </div>
     </div>
