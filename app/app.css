@@ -1,8 +1,149 @@
-@import url("https://fonts.googleapis.com/css2?family=Charis+SIL:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Design system — "Handout"
+   ---------------------------------------------------------------------------
+   The visual world is a photocopied linguistics handout: newsprint-gray stock,
+   ink that is never quite black, and the spirit-duplicator purple that
+   department handouts were run off in. Two rules drive everything:
+
+   1. The BENCH (page chrome) is tinted stock. The CANVAS (a diagram headed for
+      a Word document) is literally #FFFFFF with near-black ink, in BOTH
+      themes — because the canvas is a preview of the printed page, and the
+      export pipeline serializes the SVG without CSS, so `currentColor`
+      resolves to black no matter what the screen shows. Pinning the canvas
+      keeps preview and export honest. See utils/hw-tools/svgExport.ts.
+   2. Accent colour carries meaning, never decoration: `--ditto` is "this is
+      active / this is the primary action", `--marker` (the correction pen) is
+      reserved for destructive and error states.
+--------------------------------------------------------------------------- */
+
 @theme {
-  --font-sans: "Doulos SIL"
+  /* Gentium Plus is SIL's own text face — it carries the full IPA range, which
+     is the actual requirement here, not a stylistic preference. Archivo is the
+     UI grotesque; Noto Sans Mono sets feature values and matrices.
+     Every stack has real fallbacks: the previous `--font-sans: "Doulos SIL"`
+     named a font Google Fonts does not serve and listed no fallback, so it
+     silently resolved to the browser default. */
+  --font-display: "Gentium Plus", "Charis SIL", Georgia, "Times New Roman", serif;
+  --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Noto Sans Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+:root {
+  --bench: #dedbd2;
+  --bench-panel: #efede6;
+  --bench-sunk: #d7d3c9;
+  --line: #c4c0b4;
+  --line-soft: #d8d4c9;
+
+  /* Three text tiers, all measured against the surfaces they actually sit on.
+     `--ink-faint` is the only one that does not clear 4.5:1 everywhere, so it
+     is reserved for large notation glyphs and decorative marks — never for
+     running text. Small text uses `--ink-soft` or darker. */
+  --ink: #1c1a22;
+  --ink-soft: #5d5869;
+  --ink-faint: #6a6474;
+
+  /* `-wash` is the tinted background of an active control, `-wash-hover` the
+     same one degree deeper, `-edge` its border. Named outright rather than
+     derived with color-mix(): the minifier emits a solid-colour fallback for
+     each color-mix, and for these the fallback landed as full-strength accent
+     under accent-coloured text — effectively invisible on any engine that
+     took it. */
+  --ditto: #5b3fa8;
+  --ditto-strong: #4a3190;
+  --ditto-wash: #e8e1fa;
+  --ditto-wash-hover: #dbd0f6;
+  --ditto-edge: #b9a5e4;
+
+  --marker: #a8301f;
+  --marker-wash: #f7e2df;
+  --marker-wash-hover: #f2d1cc;
+  --marker-edge: #dfa79c;
+
+  /* Text on an accent-FILLED surface. It has to flip with the theme: the dark
+     palette's accent is a light lavender, so white-on-accent there measures
+     2.55:1 — this token keeps the filled primary button legible in both. */
+  --on-accent: #ffffff;
+
+  /* Fixed in both themes — this is paper, not UI. */
+  --canvas: #ffffff;
+  --canvas-ink: #14131a;
+  --canvas-line: #e2dfd8;
+
+  --radius: 3px;
+  --radius-lg: 5px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bench: #15141b;
+    --bench-panel: #1e1d26;
+    --bench-sunk: #100f15;
+    --line: #322f3d;
+    --line-soft: #262532;
+
+    --ink: #e9e7ef;
+    --ink-soft: #a29db1;
+    --ink-faint: #8a8499;
+
+    --ditto: #ab94f2;
+    --ditto-strong: #c1aff8;
+    --ditto-wash: #2a2340;
+    --ditto-wash-hover: #372e54;
+    --ditto-edge: #5b4d85;
+
+    --marker: #e8796b;
+    --marker-wash: #3a2220;
+    --marker-wash-hover: #402320;
+    --marker-edge: #8a4d43;
+
+    --on-accent: #1a1526;
+
+    color-scheme: dark;
+  }
+}
+
+html,
+body {
+  background: var(--bench);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+body {
+  /* Archivo runs a touch wide at small sizes; the tools are label-dense. */
+  font-feature-settings: "kern" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Accessibility floor ------------------------------------------------ */
+
+:focus-visible {
+  outline: 2px solid var(--ditto);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Tree nodes draw their own focus ring inside the SVG (see TreeGroup.tsx),
+   because `outline` on an SVG <g> is not painted by every engine. Chromium
+   DOES paint it, which produced two rings at once — suppress the CSS one and
+   let the drawn ring, which renders identically everywhere, be the indicator. */
+.canvas g[role="button"]:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @keyframes slide-left { 0% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(-60px); } }
@@ -10,11 +151,345 @@
 .animate-slide-left { animation: slide-left 0.25s linear; }
 .animate-slide-right { animation: slide-right 0.25s linear; }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
+/* --- Typography roles --------------------------------------------------- */
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+.u-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+/* Structural label: zone names, section eyebrows. These mark the parts of a
+   notation template, so they read as apparatus, not headings. Set in
+   `--ink-soft`, not `--ink-faint` — at 11px they are small text and have to
+   clear 4.5:1; the quiet feel comes from size, tracking and case instead. */
+.u-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.u-note {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* Notation set in the display face — arrows, slashes, Ø, IPA. */
+.u-notation {
+  font-family: var(--font-display);
+  color: var(--ink-faint);
+  line-height: 1;
+}
+
+/* --- Surfaces ----------------------------------------------------------- */
+
+.panel {
+  background: var(--bench-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+/* A .panel that is itself a link (e.g. a tool card) — the whole surface
+   should read as clickable, not just the button sitting inside it. */
+a.panel:hover {
+  background: var(--bench-sunk);
+  border-color: var(--ditto-edge);
+}
+
+/* The white page a diagram is headed for. Always paper, never themed. */
+.canvas {
+  background: var(--canvas);
+  color: var(--canvas-ink);
+  overflow-x: auto;
+}
+
+/* The full feature tree is intrinsically ~1300px wide, so on a 1110px canvas
+   its right-hand branches were simply cut off on load, with no cue that
+   anything had been clipped. Scale to fit instead; overflow-x above still
+   catches the genuinely-too-narrow case.
+   This is presentation only — svgExport reads viewBox, not the rendered box,
+   so the exported PNG/SVG is unaffected. */
+.canvas > svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Drawn mode marks: match the optical weight of the label beside them. */
+.mode-mark {
+  flex: none;
+  overflow: visible;
+}
+
+/* Standalone canvas — draws its own edge. Omit when the canvas is inset in a
+   .panel, which already provides one. */
+.canvas-framed {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+/* --- Buttons ------------------------------------------------------------
+   One primitive, three intents. Previously the tools mixed rounded-full
+   pills, rounded rects and bare text buttons at three visual weights with no
+   hierarchy between them. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink);
+  background: var(--bench-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--bench-sunk);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--ditto);
+  border-color: var(--ditto);
+  color: var(--on-accent);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--ditto-strong);
+  border-color: var(--ditto-strong);
+}
+
+.btn-quiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-soft);
+  padding: 0.25rem 0.45rem;
+}
+
+.btn-quiet:hover:not(:disabled) {
+  background: var(--bench-sunk);
+  color: var(--ink);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--marker-wash);
+  border-color: var(--marker);
+  color: var(--marker);
+}
+
+/* Symbol-insert keys in the rule builder — square, notation-set. */
+.btn-key {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  min-width: 2rem;
+  justify-content: center;
+  padding: 0.3rem 0.5rem;
+}
+
+/* --- Mode toolbar -------------------------------------------------------
+   Each annotation mode produces a different mark on the diagram, so each
+   button carries that mark as its glyph and its own semantic colour. Before,
+   all four turned the same blue and were distinguishable only by label. */
+
+.mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.mode:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--bench-sunk);
+}
+
+.mode:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.mode[aria-pressed="true"] {
+  color: var(--ditto);
+  background: var(--ditto-wash);
+  border-color: var(--ditto-edge);
+}
+
+.mode-danger[aria-pressed="true"] {
+  color: var(--marker);
+  background: var(--marker-wash);
+  border-color: var(--marker-edge);
+}
+
+/* The pressed-state hovers have to be spelled out, and have to come last.
+   `.mode:hover:not(:disabled)` is (0,3,0) while `.mode[aria-pressed="true"]`
+   is only (0,2,0) — without these, hovering an ACTIVE mode button would win
+   with the neutral hover and make a switched-on control look switched off.
+   Same reason `.mode-danger` needs its own: it must outrank the `.mode`
+   pressed-hover rule above it, which it does by matching specificity and
+   coming later. */
+.mode[aria-pressed="true"]:hover:not(:disabled) {
+  color: var(--ditto-strong);
+  background: var(--ditto-wash-hover);
+}
+
+.mode-danger[aria-pressed="true"]:hover:not(:disabled) {
+  color: var(--marker);
+  background: var(--marker-wash-hover);
+}
+
+/* The mark this mode draws, shown on the button itself. */
+.mode-glyph {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  line-height: 1;
+  min-width: 1.5rem;
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+.mode[aria-pressed="true"] .mode-glyph {
+  color: inherit;
+}
+
+/* --- Segmented chip ----------------------------------------------------
+   The per-tree control cluster in the feature-tree toolbar: a shared bordered
+   shell with hairline-divided segments. On/off state uses aria-pressed, the
+   same convention as .mode. Pressed-state hover is spelled out for the same
+   specificity reason documented there. */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.chip-index {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.chip-btn {
+  padding: 0.25rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.chip-btn:hover:not(:disabled) {
+  background: var(--bench-sunk);
+  color: var(--ink);
+}
+
+.chip-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.chip-btn[aria-pressed="true"] {
+  color: var(--ditto);
+  background: var(--ditto-wash);
+}
+
+.chip-btn[aria-pressed="true"]:hover:not(:disabled) {
+  color: var(--ditto-strong);
+  background: var(--ditto-wash-hover);
+}
+
+/* Later than .chip-btn:hover and equal specificity, so it wins on hover. */
+.chip-btn-danger:hover:not(:disabled) {
+  background: var(--marker-wash);
+  color: var(--marker);
+}
+
+/* Feature matrix in the editor, drawn as real bracket walls so it reads as
+   [ … ] while being edited. A plain border-left read as a stray vertical rule
+   floating beside the inputs. */
+.matrix-bracket {
+  position: relative;
+  padding-inline: 0.55rem;
+}
+
+.matrix-bracket::before,
+.matrix-bracket::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  border-block: 2px solid var(--ink-faint);
+}
+
+.matrix-bracket::before {
+  left: 0;
+  border-left: 2px solid var(--ink-faint);
+}
+
+.matrix-bracket::after {
+  right: 0;
+  border-right: 2px solid var(--ink-faint);
+}
+
+/* --- Inputs ------------------------------------------------------------- */
+
+.field {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  padding: 0.3rem 0.5rem;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+@media (prefers-color-scheme: dark) {
+  .field {
+    background: var(--bench-sunk);
   }
+}
+
+.field::placeholder {
+  color: var(--ink-faint);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+}
+
+/* --- Chrome ------------------------------------------------------------- */
+
+.rule-hairline {
+  border: 0;
+  border-top: 1px solid var(--line-soft);
 }

@@ -7,3 +7,7 @@
 
 # Worktrees
 /.worktrees/
+
+# Personal/course reference materials — not this repo's own work, kept
+# local only (repo is public).
+/references/

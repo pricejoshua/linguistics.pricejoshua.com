@@ -1,0 +1,61 @@
+{
+  "slug": "equative-predicate",
+  "title": "Equative Predicate",
+  "definition": "A [term:predicate] that asserts the identity of two referring expressions — that a and b refer to the same entity (a = b). This differs from a [term:classification-predicate], which places a into a class. Equative predicates are typically realized by juxtaposition, a [term:copula], or a [term:verbless-clause]. The classic example is 'The morning star is the evening star', where both NPs pick out the same object.",
+  "relatedTerms": ["classification-predicate", "copula", "verbless-clause", "predicate"],
+  "examples": [
+    {
+      "id": "eq-ex1",
+      "sourceLanguage": "English",
+      "translation": "The morning star is the evening star.",
+      "notes": "Both NPs refer to the same entity (Venus). This is identity (a = b), not class membership.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The morning star",
+          "segments": [{ "form": "the morning star", "gloss": "DEF morning.star" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m3", "surface": "the evening star",
+          "segments": [{ "form": "the evening star", "gloss": "DEF evening.star" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "eq-ex2",
+      "sourceLanguage": "Russian",
+      "translation": "Учитель Иван. ('John is the teacher.')",
+      "notes": "Juxtaposition strategy with no overt copula in the present tense. Word order (Учитель first) signals the predicate NP as definite/identified.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "Учитель",
+          "segments": [{ "form": "учитель", "gloss": "teacher.NOM.M" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m5", "surface": "Иван",
+          "segments": [{ "form": "Иван", "gloss": "Ivan.NOM.M" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    }
+  ]
+}

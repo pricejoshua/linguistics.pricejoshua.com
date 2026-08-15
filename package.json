@@ -11,6 +11,7 @@
   "dependencies": {
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
+    "fuse.js": "^7.4.2",
     "isbot": "^5.1.27",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
@@ -23,6 +24,7 @@
     "@types/node": "^20",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "playwright": "^1.62.1",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
     "vite": "^6.3.3",

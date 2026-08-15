@@ -37,7 +37,16 @@ export interface TreeGroupProps {
 }
 
 const INACTIVE_OPACITY = 0.25;
-const LINK_PENDING_COLOR = '#2563eb'; // tailwind blue-600, matches the app's existing accent usage
+/**
+ * Literal hexes, not CSS variables: these are drawn on the pinned-white
+ * canvas (see LinkedFeatureTrees.tsx), which does not follow the page theme.
+ * `--ditto` / `--marker` in app.css are the same two colours in their light
+ * form — keep them in sync by hand.
+ */
+const ACCENT_COLOR = '#5b3fa8';
+/** Solid ring = picked as a link's start point. Dashed box = keyboard focus. Different shapes so a node can show both at once. */
+const LINK_PENDING_COLOR = ACCENT_COLOR;
+const FOCUS_RING_COLOR = ACCENT_COLOR;
 /** Screen-pixel movement before a pointer-down becomes a drag rather than a click. */
 const DRAG_THRESHOLD = 5;
 
@@ -104,6 +113,9 @@ export default function TreeGroup({
   svgElRef,
 }: TreeGroupProps) {
   const [drag, setDrag] = useState<DragState | null>(null);
+  // Nodes are focusable and arrow-key reorderable, but a browser's own focus
+  // outline is unreliable on SVG <g>, so the ring is drawn explicitly below.
+  const [focusedNode, setFocusedNode] = useState<TreeNodeId | null>(null);
   // Pointer-down bookkeeping lives in a ref, not state — most pointer-downs
   // are just clicks and shouldn't trigger a re-render before we know better.
   const pendingRef = useRef<{
@@ -257,7 +269,10 @@ export default function TreeGroup({
             <g
               key={`node-${node.id}`}
               transform={`translate(${nodeX}, ${nodeY})`}
-              opacity={node.active ? 1 : INACTIVE_OPACITY}
+              // NOTE: the inactive dimming lives on the inner <g> below, not
+              // here. Group opacity multiplies into every child, so with it on
+              // this element the keyboard focus ring was drawn at 25% on
+              // exactly the inactive nodes a keyboard user is navigating to.
               className={`${beingDragged ? '' : 'transition-all duration-300 ease-out'}${interactive ? ' cursor-pointer' : ''}`}
               onPointerDown={
                 interactive
@@ -287,6 +302,8 @@ export default function TreeGroup({
               onPointerCancel={interactive ? endDrag : undefined}
               role={interactive ? 'button' : undefined}
               tabIndex={interactive ? 0 : undefined}
+              onFocus={interactive ? () => setFocusedNode(node.id) : undefined}
+              onBlur={interactive ? () => setFocusedNode((id) => (id === node.id ? null : id)) : undefined}
               onKeyDown={
                 interactive
                   ? (e: React.KeyboardEvent<SVGGElement>) => {
@@ -309,6 +326,33 @@ export default function TreeGroup({
                   : undefined
               }
             >
+              {focusedNode === node.id && (() => {
+                // Sized off the label's real half-width so a long label like
+                // "[+anterior]" is enclosed rather than clipped — same
+                // measurement the insertion annotation uses below.
+                const padX = 5;
+                const halfW = nodeLabelHalfWidth(node) + padX;
+                // y=0 is the FIRST line's baseline; subsequent lines step down
+                // by LINE_HEIGHT. Box from just above the cap height of line 1
+                // to just below the descender of the last line.
+                const top = -fontSize - 3;
+                const height = (node.displayLabel.length - 1) * LINE_HEIGHT + fontSize + 9;
+                return (
+                  <rect
+                    x={-halfW}
+                    y={top}
+                    width={halfW * 2}
+                    height={height}
+                    rx={3}
+                    fill="none"
+                    stroke={FOCUS_RING_COLOR}
+                    strokeWidth={1.5}
+                    strokeDasharray="3 2"
+                    pointerEvents="none"
+                  />
+                );
+              })()}
+              <g opacity={node.active ? 1 : INACTIVE_OPACITY}>
               {pending && (
                 <circle
                   r={Math.max(fontSize * 1.4, 12)}
@@ -358,7 +402,9 @@ export default function TreeGroup({
                   <g
                     stroke="currentColor"
                     strokeWidth={1.4}
-                    opacity={node.active ? 1 : INACTIVE_OPACITY}
+                    // No opacity here — the wrapping <g> already applies the
+                    // inactive dimming, and group opacity multiplies (0.25 ×
+                    // 0.25 would render this at 6%).
                     transform={`translate(0, ${vCenter})`}
                   >
                     <line x1={lineStart} y1={0} x2={lineEnd} y2={0} />
@@ -381,6 +427,7 @@ export default function TreeGroup({
                   </g>
                 );
               })()}
+              </g>
             </g>
           );
         })}

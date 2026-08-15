@@ -17,19 +17,26 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.gstatic.com",
     crossOrigin: "anonymous",
   },
-  // Noto Sans / Noto Sans Mono: improves the live on-screen hw-tools editing
-  // preview (rendered in the normal page context, so the linked web fonts
-  // resolve normally there) and gives consistent cross-browser rendering
-  // while a student is building a diagram. This link does NOT affect the
-  // rasterized PNG export or a Word-inserted downloaded SVG — both of those
-  // only see fonts already installed locally on the machine (rasterization
-  // via `new Image()` loading a serialized SVG blob runs in an isolated
-  // context that can't fetch external @font-face resources), so the hw-tools
-  // SVG text uses generic "sans-serif"/"monospace" families rather than
-  // naming these fonts directly. See TreeGroup.tsx / RuleDiagram.tsx.
+  // Gentium Plus is SIL's text face: it covers the full IPA range, which is a
+  // hard requirement for glossary examples and rule notation, not a stylistic
+  // preference. Archivo sets the UI chrome, Noto Sans Mono sets feature
+  // matrices and data.
+  //
+  // Note the previous stylesheet imported Charis SIL and then never used it,
+  // while `--font-sans` named "Doulos SIL" — a face Google Fonts does not
+  // serve — with no fallback stack, so the base font silently resolved to the
+  // browser default.
+  //
+  // These links do NOT affect the rasterized PNG export or a Word-inserted
+  // downloaded SVG — both only see fonts already installed locally on the
+  // machine (rasterization via `new Image()` loading a serialized SVG blob
+  // runs in an isolated context that can't fetch external @font-face
+  // resources), so the hw-tools SVG text uses generic "serif"/"monospace"
+  // families rather than naming these fonts directly. See TreeGroup.tsx /
+  // RuleDiagram.tsx.
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Mono:wght@400..700&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400..700;1,400..700&family=Gentium+Plus:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+Mono:wght@400..700&display=swap",
   },
 ];
 

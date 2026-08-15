@@ -1,0 +1,189 @@
+{
+  "slug": "existential-predicate",
+  "title": "Existential Predicate",
+  "definition": "A [term:predicate] that asserts the existence of a referent, typically in relation to a locative or temporal ground (∃x [LOC/TEMP]). The subject NP is typically indefinite. Existential predicates often employ a dedicated verb or invariant particle distinct from the regular [term:copula], and frequently use special negation (a 'lack' or 'absence' verb). They overlap structurally with [term:locative-predicate]s and [term:presentational-construction]s, and often grammaticalize into [term:possessive-predicate] constructions.",
+  "relatedTerms": ["locative-predicate", "possessive-predicate", "presentational-construction", "copula", "predicate"],
+  "examples": [
+    {
+      "id": "exist-ex1",
+      "sourceLanguage": "English",
+      "translation": "There is a cat under the bed.",
+      "notes": "The expletive there occupies subject position; the logical subject 'a cat' (indefinite) follows the verb.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "There",
+          "segments": [{ "form": "there", "gloss": "EXPL" }],
+          "roles": { "Grammatical": ["expletive-subject"] }
+        },
+        {
+          "id": "m2", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "EXIST.PRS.3SG" }],
+          "roles": { "Grammatical": ["existential-verb"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m3", "surface": "a cat",
+          "segments": [{ "form": "a cat", "gloss": "INDEF cat" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m4", "surface": "under the bed",
+          "segments": [{ "form": "under the bed", "gloss": "under DEF bed" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        }
+      ]
+    },
+    {
+      "id": "exist-ex2",
+      "sourceLanguage": "Spanish",
+      "translation": "Hay un gato bajo la cama. ('There's a cat under the bed.')",
+      "notes": "Hay is a defective/invariant existential form (from haber); it does not agree and is distinct from the copula ser/estar. Same form for singular and plural.",
+      "morphemes": [
+        {
+          "id": "m5", "surface": "Hay",
+          "segments": [{ "form": "hay", "gloss": "EXIST.INVAR" }],
+          "roles": { "Grammatical": ["existential-verb"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m6", "surface": "un",
+          "segments": [{ "form": "un", "gloss": "INDEF.M.SG" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m7", "surface": "gato",
+          "segments": [{ "form": "gato", "gloss": "cat.M.SG" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m8", "surface": "bajo la cama",
+          "segments": [{ "form": "bajo la cama", "gloss": "under DEF.F bed" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        }
+      ]
+    },
+    {
+      "id": "exist-ex3",
+      "sourceLanguage": "Estonian",
+      "translation": "Laual on klaas piima. ('There is a glass of milk on the table.')",
+      "notes": "Estonian uses the regular copula on for existentials. The locative phrase laual 'on the table' is fronted; the subject klaas piima is indefinite.",
+      "morphemes": [
+        {
+          "id": "m9", "surface": "Laual",
+          "segments": [{ "form": "laud", "gloss": "table" }, { "form": "l", "gloss": "LOC" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        },
+        {
+          "id": "m10", "surface": "on",
+          "segments": [{ "form": "ole", "gloss": "COP/EXIST.PRS.3SG" }],
+          "roles": { "Grammatical": ["existential-verb"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m11", "surface": "klaas piima",
+          "segments": [{ "form": "klaas piima", "gloss": "glass.NOM milk.GEN" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "exist-ex4",
+      "sourceLanguage": "Turkish",
+      "translation": "Köşe-de bir kafe var. ('There is a café on the corner.')",
+      "notes": "var is an invariant existential particle ('exist'); its negative counterpart yok ('lack/absent') is used in negation rather than negating var.",
+      "morphemes": [
+        {
+          "id": "m12", "surface": "Köşe-de",
+          "segments": [{ "form": "köşe", "gloss": "corner" }, { "form": "de", "gloss": "LOC" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        },
+        {
+          "id": "m13", "surface": "bir",
+          "segments": [{ "form": "bir", "gloss": "INDEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m14", "surface": "kafe",
+          "segments": [{ "form": "kafe", "gloss": "café" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m15", "surface": "var",
+          "segments": [{ "form": "var", "gloss": "EXIST" }],
+          "roles": { "Grammatical": ["existential-particle"], "Predication": ["predicate"] }
+        }
+      ]
+    },
+    {
+      "id": "exist-ex5",
+      "sourceLanguage": "Estonian (negation)",
+      "translation": "Laual pole klaas-i piima. ('There is no glass of milk on the table.')",
+      "notes": "Special negative existential: pole (< ei ole, 'not be') replaces on and takes a genitive object, illustrating the special negation characteristic of many existential constructions.",
+      "morphemes": [
+        {
+          "id": "m16", "surface": "Laual",
+          "segments": [{ "form": "laud", "gloss": "table" }, { "form": "l", "gloss": "LOC" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        },
+        {
+          "id": "m17", "surface": "pole",
+          "segments": [{ "form": "pole", "gloss": "NEG.EXIST.PRS.3SG" }],
+          "roles": { "Grammatical": ["existential-verb", "negation"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m18", "surface": "klaas-i",
+          "segments": [{ "form": "klaas", "gloss": "glass" }, { "form": "i", "gloss": "GEN" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m19", "surface": "piima",
+          "segments": [{ "form": "piim", "gloss": "milk" }, { "form": "a", "gloss": "GEN" }],
+          "roles": { "Grammatical": ["NP-modifier"] }
+        }
+      ]
+    },
+    {
+      "id": "exist-ex6",
+      "sourceLanguage": "Mandarin Chinese",
+      "translation": "有一本書在桌子上。(Yǒu yī-běn shū zài zhuōzi shàng.) ('There is a book on the table.')",
+      "notes": "yǒu is the dedicated existential/possessive verb. It precedes the subject NP and takes no expletive subject.",
+      "morphemes": [
+        {
+          "id": "m20", "surface": "有",
+          "segments": [{ "form": "yǒu", "gloss": "EXIST/HAVE" }],
+          "roles": { "Grammatical": ["existential-verb"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m21", "surface": "一本",
+          "segments": [{ "form": "yī-běn", "gloss": "one-CL" }],
+          "roles": { "Grammatical": ["numeral-classifier"] }
+        },
+        {
+          "id": "m22", "surface": "書",
+          "segments": [{ "form": "shū", "gloss": "book" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m23", "surface": "在桌子上",
+          "segments": [{ "form": "zài zhuōzi shàng", "gloss": "at table on" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        }
+      ]
+    }
+  ]
+}

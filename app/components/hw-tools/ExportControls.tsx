@@ -7,20 +7,24 @@ export interface ExportControlsProps {
   filenameBase: string;
 }
 
+type Status = { text: string; tone: 'ok' | 'error' } | null;
+
 export default function ExportControls({ svgRef, disabled, filenameBase }: ExportControlsProps) {
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>(null);
 
   const handleCopyPng = async () => {
     if (!svgRef.current) return;
     try {
       const result = await copySvgAsPng(svgRef.current);
-      setStatus(
-        result === 'copied'
-          ? 'Copied to clipboard — paste into Word with Ctrl+V.'
-          : 'Clipboard copy unavailable — PNG downloaded instead.',
-      );
+      setStatus({
+        tone: 'ok',
+        text:
+          result === 'copied'
+            ? 'Copied. Paste into Word with Ctrl+V.'
+            : 'Your browser blocked the clipboard, so the PNG downloaded instead.',
+      });
     } catch {
-      setStatus('Could not export image — try again.');
+      setStatus({ tone: 'error', text: 'The image could not be built. Try again.' });
     }
   };
 
@@ -28,19 +32,23 @@ export default function ExportControls({ svgRef, disabled, filenameBase }: Expor
     if (!svgRef.current) return;
     try {
       downloadSvg(svgRef.current, `${filenameBase}.svg`);
-      setStatus('SVG downloaded — insert it in Word via Insert > Pictures for true vector quality.');
+      setStatus({
+        tone: 'ok',
+        text: 'Downloaded. In Word, use Insert > Pictures to place it at full vector quality.',
+      });
     } catch {
-      setStatus('Could not export SVG — try again.');
+      setStatus({ tone: 'error', text: 'The file could not be built. Try again.' });
     }
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <>
       <button
         type="button"
         onClick={handleCopyPng}
         disabled={disabled}
-        className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700"
+        title={disabled ? 'Build something first' : 'Copy the diagram as an image'}
+        className="btn btn-primary"
       >
         Copy as PNG
       </button>
@@ -48,11 +56,23 @@ export default function ExportControls({ svgRef, disabled, filenameBase }: Expor
         type="button"
         onClick={handleDownloadSvg}
         disabled={disabled}
-        className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-700"
+        title={disabled ? 'Build something first' : 'Download a vector file'}
+        className="btn"
       >
         Download SVG
       </button>
-      {status && <span className="text-sm text-gray-600 dark:text-gray-300">{status}</span>}
-    </div>
+      {/*
+        aria-live so the outcome reaches a screen reader — copying is silent
+        and otherwise gives no feedback at all that it worked.
+      */}
+      <span
+        role="status"
+        aria-live="polite"
+        className="u-note"
+        style={{ color: status?.tone === 'error' ? 'var(--marker)' : 'var(--ink-soft)' }}
+      >
+        {status?.text ?? ''}
+      </span>
+    </>
   );
 }

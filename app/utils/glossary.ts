@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 import type { GlossaryEntry, GlossaryIndexEntry } from '~/types/glossary';
+import type { SearchableEntry } from '~/utils/search';
 import indexData from '~/data/glossary/index.json';
 
 const entryModules = import.meta.glob<{ default: GlossaryEntry }>(
@@ -23,6 +24,21 @@ export function getFirstSentence(definition: string): string {
   });
   const m = stripped.match(/^[^.!?]+[.!?]/);
   return m ? m[0] : stripped;
+}
+
+function stripTermMarkup(definition: string): string {
+  return definition.replace(/\[term:([^\]]+)\]/g, (_, slug) =>
+    slug.replace(/-/g, ' ')
+  );
+}
+
+export function loadGlossarySearchCorpus(): SearchableEntry[] {
+  return (indexData as GlossaryIndexEntry[]).map(idx => {
+    const entry = loadGlossaryEntry(idx.slug);
+    const definitionText = entry ? stripTermMarkup(entry.definition) : '';
+    const definitionPreview = getFirstSentence(definitionText);
+    return { slug: idx.slug, title: idx.title, categories: idx.categories, definitionText, definitionPreview };
+  });
 }
 
 export function parseDefinition(

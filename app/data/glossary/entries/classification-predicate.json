@@ -1,0 +1,119 @@
+{
+  "slug": "classification-predicate",
+  "title": "Classification Predicate",
+  "definition": "A [term:predicate] that places a referent into a class or category (a ∈ B). Unlike an [term:equative-predicate], which asserts identity between two individuals, a classification predicate asserts that the subject belongs to a type. The predicate NP is typically indefinite. Strategies across languages include bare juxtaposition, a [term:copula], a [term:denominal-strategy], and predicative marking.",
+  "relatedTerms": ["equative-predicate", "copula", "verbless-clause", "denominal-strategy", "predicate"],
+  "examples": [
+    {
+      "id": "cl-ex1",
+      "sourceLanguage": "English",
+      "translation": "The sun is a star.",
+      "notes": "Indefinite predicate NP marks this as classification (a ∈ B), not identity.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The sun",
+          "segments": [{ "form": "the sun", "gloss": "DEF sun" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m3", "surface": "a",
+          "segments": [{ "form": "a", "gloss": "INDEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m4", "surface": "star",
+          "segments": [{ "form": "star", "gloss": "star" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cl-ex2",
+      "sourceLanguage": "Kagayanen",
+      "translation": "Maistro Atong ya. ('Atong is a/the teacher.')",
+      "notes": "Juxtaposition strategy: predicate NP precedes subject NP, with a definiteness particle ya on the subject.",
+      "morphemes": [
+        {
+          "id": "m5", "surface": "Maistro",
+          "segments": [{ "form": "maistro", "gloss": "teacher" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m6", "surface": "Atong",
+          "segments": [{ "form": "Atong", "gloss": "Atong" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m7", "surface": "ya",
+          "segments": [{ "form": "ya", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        }
+      ]
+    },
+    {
+      "id": "cl-ex3",
+      "sourceLanguage": "Russian",
+      "translation": "Иван учитель. ('John is a teacher.')",
+      "notes": "Juxtaposition with no copula in present tense. Indefinite reading (classification) signalled by word order: subject first.",
+      "morphemes": [
+        {
+          "id": "m8", "surface": "Иван",
+          "segments": [{ "form": "Иван", "gloss": "Ivan.NOM.M" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m9", "surface": "учитель",
+          "segments": [{ "form": "учитель", "gloss": "teacher.NOM.M" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cl-ex4",
+      "sourceLanguage": "Hamer (Ethiopia)",
+      "translation": "inta dibi-ne ('I am a thief')",
+      "notes": "Predicative marking strategy: the suffix -ne attaches to the predicate noun, marking it as a predicate rather than an argument.",
+      "morphemes": [
+        {
+          "id": "m10", "surface": "inta",
+          "segments": [{ "form": "inta", "gloss": "1SG" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m11", "surface": "dibi-ne",
+          "segments": [{ "form": "dibi", "gloss": "thief" }, { "form": "ne", "gloss": "PRED" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    }
+  ]
+}

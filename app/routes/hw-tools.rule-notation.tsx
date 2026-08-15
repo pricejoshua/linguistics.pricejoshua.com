@@ -16,37 +16,52 @@ function hasContent(rule: Rule): boolean {
 export default function RuleNotationTool() {
   const [rule, setRule] = useState<Rule>(emptyRule());
   const exportRef = useRef<SVGSVGElement>(null);
+  const filled = hasContent(rule);
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Rule Notation Builder</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          Fill in each zone of the rule: Target and Change around the arrow, Environment before/after the
-          blank. Add plain symbols, or a feature matrix (standalone, or attached under a symbol with
-          "+ matrix").
+    <main className="max-w-6xl mx-auto px-5 py-8">
+      <header className="mb-6 max-w-2xl">
+        <h1 className="u-display" style={{ fontSize: '1.6rem' }}>
+          Rule notation
+        </h1>
+        <p className="u-note mt-2">
+          Fill in the four zones of the rule. The arrow, slash and blank are already in place — the
+          editor below is laid out in the shape of the rule you are writing.
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          Nothing here is saved — copy your work before navigating away.
-        </p>
-      </div>
+      </header>
+
+      {/*
+        Output first. The rendered rule is the thing being made, so it sits at
+        the top where the eye lands and stays visible while the zones below are
+        edited. It is pinned white in both themes because it is a preview of
+        the document page it is headed for.
+      */}
+      <section className="mb-5">
+        <h2 className="u-label mb-2">Your rule</h2>
+        <div className="canvas canvas-framed p-6 flex items-center min-h-24">
+          {/* Always mounted so the export ref is populated whenever the export
+              buttons are live. An empty rule simply draws nothing. */}
+          <RuleDiagram ref={exportRef} rule={rule} label="Rule notation preview" />
+          {!filled && (
+            <p className="u-note">
+              Nothing yet. Add a symbol or a feature matrix to a zone below and it appears here.
+            </p>
+          )}
+        </div>
+      </section>
 
       <RuleBuilder rule={rule} onChange={setRule} />
 
-      <div className="border border-gray-200 dark:border-gray-800 rounded p-4 overflow-x-auto">
-        <RuleDiagram ref={exportRef} rule={rule} label="Rule notation preview" />
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <ExportControls svgRef={exportRef} disabled={!hasContent(rule)} filenameBase="rule-notation" />
-        <button
-          type="button"
-          onClick={() => setRule(emptyRule())}
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
-        >
-          Clear
+      <div className="flex flex-wrap items-center gap-2 mt-5">
+        <ExportControls svgRef={exportRef} disabled={!filled} filenameBase="rule-notation" />
+        <button type="button" onClick={() => setRule(emptyRule())} className="btn btn-danger ml-auto">
+          Clear everything
         </button>
       </div>
-    </div>
+
+      <p className="u-note mt-2">
+        Nothing here is saved. Copy or download your work before you leave the page.
+      </p>
+    </main>
   );
 }

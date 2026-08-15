@@ -38,7 +38,10 @@ const RuleDiagram = forwardRef<SVGSVGElement, RuleDiagramProps>(function RuleDia
       height={height}
       role="img"
       aria-label={label}
-      className="text-gray-900 dark:text-gray-100"
+      // Presentation attribute, not a class — see the same note in
+      // LinkedFeatureTrees.tsx. It has to survive XMLSerializer so the
+      // on-screen preview and the exported file use identical ink.
+      color="#14131a"
     >
       {/* fontFamily is "monospace" rather than a named web font: rasterization
           (svgExport's svgToPngBlob loads the serialized SVG via `new Image()`)

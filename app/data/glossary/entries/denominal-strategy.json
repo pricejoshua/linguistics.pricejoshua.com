@@ -1,0 +1,84 @@
+{
+  "slug": "denominal-strategy",
+  "title": "Denominal Strategy",
+  "definition": "A strategy for forming predicates of being in which a noun (or adjective) takes verbal inflection directly — typically subject-agreement affixes — without a separate [term:copula]. The noun itself functions as a predicate verb. This differs from the juxtaposition strategy (bare NP predicate) and the copula strategy (RE + copula + RE). Attested in Nenets, Classical Nahuatl, and Bella Coola, among others. Related to Dixon's (§3.5) observation that in some languages nouns may have a secondary function as predicate head, taking verbal person suffixes.",
+  "relatedTerms": ["classification-predicate", "descriptive-predicate", "copula", "verbless-clause", "word-class"],
+  "examples": [
+    {
+      "id": "den-ex1",
+      "sourceLanguage": "Classical Nahuatl",
+      "translation": "ni-tiːcitl ('I am a doctor.')",
+      "notes": "The noun tiːcitl 'doctor' takes the 1SG subject prefix ni- directly, functioning as a predicate verb with no copula. Compare ni-choːca 'I am crying' — same morphological pattern.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "ni-tiːcitl",
+          "segments": [
+            { "form": "ni", "gloss": "1SG" },
+            { "form": "tiːcitl", "gloss": "doctor" }
+          ],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "den-ex2",
+      "sourceLanguage": "Bella Coola (Salishan, British Columbia)",
+      "translation": "staltmx-aw wa-ʔimlk ('The man is a chief.')",
+      "notes": "staltmx 'chief' takes the intransitive suffix -aw directly. The subject wa-ʔimlk 'the man' is a separate NP. The noun staltmx thus patterns as an intransitive verb predicate.",
+      "morphemes": [
+        {
+          "id": "m2", "surface": "staltmx-aw",
+          "segments": [
+            { "form": "staltmx", "gloss": "chief" },
+            { "form": "aw", "gloss": "INTR" }
+          ],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m3", "surface": "wa-ʔimlk",
+          "segments": [
+            { "form": "wa", "gloss": "PROX" },
+            { "form": "ʔimlk", "gloss": "man" }
+          ],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "den-ex3",
+      "sourceLanguage": "Nenets (Siberia, Uralic)",
+      "translation": "mań hāsawa-dm ('I am a man.')",
+      "notes": "From Dixon (§3.5): the noun hāsawa 'man' takes a verbal person suffix -dm (1SG), functioning as predicate head. Hajaú (1963) describes this as the substantive taking verbal person suffixes in predicate function.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "mań",
+          "segments": [{ "form": "mań", "gloss": "1SG" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m5", "surface": "hāsawa-dm",
+          "segments": [
+            { "form": "hāsawa", "gloss": "man" },
+            { "form": "dm", "gloss": "1SG.PRED" }
+          ],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    }
+  ]
+}

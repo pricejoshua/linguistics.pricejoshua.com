@@ -1,11 +1,41 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router';
 import { X } from 'lucide-react';
 import type { GlossaryMorpheme } from '~/types/glossary';
+import { lookupGloss } from '~/data/leipzig-glossing';
 import TermLink from './TermLink';
 
 interface ClickPanelProps {
   morpheme: GlossaryMorpheme | null;
   onClose: () => void;
+}
+
+function GlossTag({ gloss }: { gloss: string }) {
+  // Render a gloss string like COP.PRS.3SG with each sub-token expanded
+  const tokens = gloss.split('.');
+  return (
+    <span className="font-mono">
+      {tokens.map((token, i) => {
+        const match = lookupGloss(token);
+        return (
+          <span key={i}>
+            {i > 0 && <span className="text-gray-400">.</span>}
+            {match ? (
+              <Link
+                to={`/glossary/abbreviations#${match.abbreviation}`}
+                title={match.description}
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {token}
+              </Link>
+            ) : (
+              <span>{token}</span>
+            )}
+          </span>
+        );
+      })}
+    </span>
+  );
 }
 
 function PanelContent({
@@ -15,7 +45,6 @@ function PanelContent({
   morpheme: GlossaryMorpheme;
   onClose: () => void;
 }) {
-  const breakdown = morpheme.segments.map(s => `${s.form} [${s.gloss}]`).join(' + ');
   const roleEntries = Object.entries(morpheme.roles).filter(([, v]) => v.length > 0);
 
   return (
@@ -35,10 +64,23 @@ function PanelContent({
       <hr className="border-gray-200 dark:border-gray-700 mb-4" />
       <div className="space-y-4">
         <div>
-          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
             Morpheme breakdown
           </p>
-          <p className="text-sm font-mono text-gray-800 dark:text-gray-200">{breakdown}</p>
+          <div className="space-y-2">
+            {morpheme.segments.map((seg, i) => (
+              <div key={i} className="flex items-baseline gap-2 text-sm">
+                <span className="text-gray-800 dark:text-gray-200 font-medium min-w-[4rem]">{seg.form}</span>
+                <span className="text-gray-400">→</span>
+                <GlossTag gloss={seg.gloss} />
+                {lookupGloss(seg.gloss.split('.')[0]) && (
+                  <span className="text-gray-400 text-xs italic">
+                    {seg.gloss.split('.').map(t => lookupGloss(t)?.label).filter(Boolean).join(' · ')}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
         {roleEntries.map(([category, values]) => (
           <div key={category}>

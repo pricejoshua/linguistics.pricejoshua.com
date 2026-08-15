@@ -1,0 +1,90 @@
+{
+  "slug": "word-class",
+  "title": "Word Class",
+  "definition": "A set of words sharing grammatical properties — morphological and syntactic behavior — that determines which positions in clause structure they may fill. Word classes must be recognized on internal grammatical criteria within each language, not on meaning alone (Dixon §11.1). The primary functions are universal: nouns always include words for concrete objects and serve as heads of NPs in argument slots (S, A, O); verbs always include words for actions and serve as heads of predicates. Dixon (§11.2) identifies five schemes for how noun and verb interact with clause structure: Scheme I (canonical) — nouns only as NP head, verbs only as predicate head (Latin, German, Dyirbal); Scheme II — nouns may also head predicates (Nenets, Mao Naga, Fijian, Classical Nahuatl — see [term:omnipredicative]); Scheme III — verbs may also head NPs (Mandarin); Scheme IV — both apply (Nootka/Wakashan, Salish); Scheme V — noun and verb are separated by overt [term:zero-derivation] rather than multifunctionality (English, possibly Mundari). The critical test for Schemes II/IV versus V is *bidirectionality*: does every noun have secondary function as predicate head, and does every verb have secondary function as NP head? And when a word class does appear in its secondary slot, are the structural possibilities identical to those of the class native to that slot? (They never are — verbs as NP heads typically cannot take possessors in Salish, cannot take quantifiers in Nootka, etc.)",
+  "relatedTerms": ["predicate", "subject", "denominal-strategy", "descriptive-predicate", "zero-derivation", "nominalization", "verbalization", "omnipredicative", "copula-complement"],
+  "examples": [
+    {
+      "id": "wc-ex1",
+      "sourceLanguage": "Mandarin Chinese (Dixon §3.5)",
+      "translation": "Daifu lai le. ('The doctor came.')",
+      "notes": "Scheme III (Dixon): nouns may only fill argument slots; verbs may fill either predicate or argument slots. Here daifu 'doctor' is a noun in subject (argument) position; lai 'come' is a verb in predicate position — their canonical functions.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "Daifu",
+          "segments": [{ "form": "daifu", "gloss": "doctor" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "lai",
+          "segments": [{ "form": "lai", "gloss": "come" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m3", "surface": "le",
+          "segments": [{ "form": "le", "gloss": "CRS" }],
+          "roles": { "Grammatical": ["particle"] }
+        }
+      ]
+    },
+    {
+      "id": "wc-ex2",
+      "sourceLanguage": "Mandarin Chinese (Dixon §3.5)",
+      "translation": "Lai tui le. ('Coming was right.')",
+      "notes": "Verb lai 'come' in its secondary function as argument (subject) — Mandarin verbs may fill either slot, unlike nouns which only fill argument slots.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "Lai",
+          "segments": [{ "form": "lai", "gloss": "come" }],
+          "roles": {
+            "Grammatical": ["subject", "verb-as-argument"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m5", "surface": "tui",
+          "segments": [{ "form": "tui", "gloss": "be.right" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m6", "surface": "le",
+          "segments": [{ "form": "le", "gloss": "CRS" }],
+          "roles": { "Grammatical": ["particle"] }
+        }
+      ]
+    },
+    {
+      "id": "wc-ex3",
+      "sourceLanguage": "Nootka (British Columbia, Dixon §3.5)",
+      "translation": "qo:ʔas-ma ʔi:h-ʔi ('The large one is a man.')",
+      "notes": "Scheme IV (Dixon): both noun and verb may fill either predicate or argument slot, though each has a primary function. Here ʔi:h 'be.large' (a verb) takes the article -ʔi as argument; qo:ʔas 'man' (a noun) takes the predicate agreement suffix -ma. The thick/thin line metaphor: primary functions are more frequent.",
+      "morphemes": [
+        {
+          "id": "m7", "surface": "qo:ʔas-ma",
+          "segments": [
+            { "form": "qo:ʔas", "gloss": "man" },
+            { "form": "ma", "gloss": "3SG.IND" }
+          ],
+          "roles": {
+            "Grammatical": ["predicate", "NP-as-predicate"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m8", "surface": "ʔi:h-ʔi",
+          "segments": [
+            { "form": "ʔi:h", "gloss": "be.large" },
+            { "form": "ʔi", "gloss": "ART" }
+          ],
+          "roles": {
+            "Grammatical": ["subject", "verb-as-argument"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    }
+  ]
+}

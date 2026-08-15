@@ -1,0 +1,117 @@
+{
+  "slug": "presentational-construction",
+  "title": "Presentational Construction",
+  "definition": "A construction that introduces a referent onto the discourse stage, typically asserting its presence at or arrival in a location salient to the speech situation. Structurally similar to [term:existential-predicate]s, but oriented toward pointing out or presenting a specific (often identifiable) referent rather than asserting bare existence. Strategies include non-verbal deictic expressions ('Here's X'), topic-comment juxtaposition, and grammaticalized verbs from perception roots (French voici/voilà from voir 'see').",
+  "relatedTerms": ["existential-predicate", "copula", "predicate"],
+  "examples": [
+    {
+      "id": "pres-ex1",
+      "sourceLanguage": "English",
+      "translation": "THERE'S my keys!",
+      "notes": "Presentational use of there's: the referent (my keys) is specific and identifiable, contrasting with existential 'There are keys on the table' where the subject is indefinite.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "THERE'S",
+          "segments": [{ "form": "there", "gloss": "PRES" }, { "form": "'s", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["presentational-particle", "copula"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m2", "surface": "my keys",
+          "segments": [{ "form": "my keys", "gloss": "1SG.POSS key.PL" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pres-ex2",
+      "sourceLanguage": "Kagayanen",
+      "translation": "Anen di mama an. ('The man is here.')",
+      "notes": "The identifiable-existential particle anen (vs. indefinite may) introduces a referent whose presence is expected or salient ('We've been expecting him').",
+      "morphemes": [
+        {
+          "id": "m3", "surface": "Anen",
+          "segments": [{ "form": "anen", "gloss": "EXIST.IDENT" }],
+          "roles": { "Grammatical": ["existential-particle"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m4", "surface": "di",
+          "segments": [{ "form": "di", "gloss": "here" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        },
+        {
+          "id": "m5", "surface": "mama",
+          "segments": [{ "form": "mama", "gloss": "man" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m6", "surface": "an",
+          "segments": [{ "form": "an", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        }
+      ]
+    },
+    {
+      "id": "pres-ex3",
+      "sourceLanguage": "French",
+      "translation": "Voici un oeuf. ('Here's an egg.')",
+      "notes": "Grammaticalized presentational: voici is frozen from voir 'see' + ici 'here'. Voilà (voir + là 'there') for distal presentation. These are invariant particles, not inflectable verbs.",
+      "morphemes": [
+        {
+          "id": "m7", "surface": "Voici",
+          "segments": [{ "form": "voir", "gloss": "see" }, { "form": "ici", "gloss": "here" }],
+          "roles": { "Grammatical": ["presentational-particle"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m8", "surface": "un",
+          "segments": [{ "form": "un", "gloss": "INDEF.M.SG" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m9", "surface": "oeuf",
+          "segments": [{ "form": "oeuf", "gloss": "egg" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pres-ex4",
+      "sourceLanguage": "English (verbal strategy)",
+      "translation": "On the horizon there appeared a ship.",
+      "notes": "Verbal presentational with inverted word order: the verb of appearance/motion introduces the referent. Common in narrative contexts.",
+      "morphemes": [
+        {
+          "id": "m10", "surface": "On the horizon",
+          "segments": [{ "form": "on the horizon", "gloss": "on DEF horizon" }],
+          "roles": { "Grammatical": ["adjunct"], "Semantic": ["location"] }
+        },
+        {
+          "id": "m11", "surface": "there",
+          "segments": [{ "form": "there", "gloss": "PRES" }],
+          "roles": { "Grammatical": ["presentational-particle"] }
+        },
+        {
+          "id": "m12", "surface": "appeared",
+          "segments": [{ "form": "appear", "gloss": "appear" }, { "form": "ed", "gloss": "PST" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m13", "surface": "a ship",
+          "segments": [{ "form": "a ship", "gloss": "INDEF ship" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    }
+  ]
+}

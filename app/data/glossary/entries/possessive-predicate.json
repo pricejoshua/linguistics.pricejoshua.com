@@ -1,0 +1,158 @@
+{
+  "slug": "possessive-predicate",
+  "title": "Possessive Predicate",
+  "definition": "A [term:predicate] that expresses that one referent possesses another. Languages employ several strategies: (1) the locative strategy, where the possessor is encoded as a locative and the possessed item is the grammatical subject ('a match is at me'); (2) the genitive/nominal strategy, where the possessed item is predicated as belonging to a genitive possessor ('it is my car'); (3) the existential strategy, where the possessed item 'exists' with the possessor as an oblique; and (4) the HAVE-verb strategy, where possession is treated as a transitive relation. HAVE drift describes a typological tendency for the possessor in existential-based constructions to shift from oblique toward nominative/topic over time.",
+  "relatedTerms": ["existential-predicate", "locative-predicate", "copula", "predicate"],
+  "examples": [
+    {
+      "id": "poss-ex1",
+      "sourceLanguage": "Estonian (locative strategy)",
+      "translation": "Lapsel on piima. ('The child has milk.' Lit: 'Milk is at the child.')",
+      "notes": "Locative strategy: possessor takes locative case; the possessed item is the nominative subject of the copula on.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "Lapsel",
+          "segments": [{ "form": "laps", "gloss": "child" }, { "form": "el", "gloss": "LOC" }],
+          "roles": {
+            "Grammatical": ["adjunct"],
+            "Semantic": ["possessor"]
+          }
+        },
+        {
+          "id": "m2", "surface": "on",
+          "segments": [{ "form": "ole", "gloss": "COP/EXIST.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m3", "surface": "piima",
+          "segments": [{ "form": "piim", "gloss": "milk.NOM" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["possessed"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "poss-ex2",
+      "sourceLanguage": "Avar",
+      "translation": "Dir mašina b-ugo. ('I have a car.' Lit: 'It is my car.')",
+      "notes": "Genitive/nominal strategy: the possessed item is predicated as belonging to a genitive possessor. The copula ugo agrees in noun class with mašina (class b).",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "Dir",
+          "segments": [{ "form": "dir", "gloss": "1SG.GEN" }],
+          "roles": {
+            "Grammatical": ["determiner"],
+            "Semantic": ["possessor"]
+          }
+        },
+        {
+          "id": "m5", "surface": "mašina",
+          "segments": [{ "form": "mašina", "gloss": "car" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["possessed"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m6", "surface": "b-ugo",
+          "segments": [{ "form": "b", "gloss": "CL3" }, { "form": "ugo", "gloss": "COP.PRS" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["predicate"] }
+        }
+      ]
+    },
+    {
+      "id": "poss-ex3",
+      "sourceLanguage": "Turkish (existential strategy)",
+      "translation": "Cocugun babasi var. ('The child has a father.' Lit: 'The child's father exists.')",
+      "notes": "Existential strategy: the possessed item (babasi 'his/her father') is the subject of the existential particle var; the possessor is a genitive NP modifying it.",
+      "morphemes": [
+        {
+          "id": "m7", "surface": "Cocugun",
+          "segments": [{ "form": "cocug", "gloss": "child" }, { "form": "un", "gloss": "GEN" }],
+          "roles": {
+            "Grammatical": ["NP-modifier"],
+            "Semantic": ["possessor"]
+          }
+        },
+        {
+          "id": "m8", "surface": "babasi",
+          "segments": [{ "form": "baba", "gloss": "father" }, { "form": "si", "gloss": "3SG.POSS" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["possessed"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m9", "surface": "var",
+          "segments": [{ "form": "var", "gloss": "EXIST" }],
+          "roles": { "Grammatical": ["existential-particle"], "Predication": ["predicate"] }
+        }
+      ]
+    },
+    {
+      "id": "poss-ex4",
+      "sourceLanguage": "English (HAVE-verb strategy)",
+      "translation": "We have a problem.",
+      "notes": "The HAVE-verb strategy treats possession as a transitive relation, with the possessor as subject (A role) and the possessed as object. This is typologically unusual — most of the world's languages use one of the oblique-possessor strategies.",
+      "morphemes": [
+        {
+          "id": "m10", "surface": "We",
+          "segments": [{ "form": "we", "gloss": "1PL.NOM" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["possessor"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m11", "surface": "have",
+          "segments": [{ "form": "have", "gloss": "HAVE.PRS.1PL" }],
+          "roles": { "Grammatical": ["verb", "predicate"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m12", "surface": "a problem",
+          "segments": [{ "form": "a problem", "gloss": "INDEF problem" }],
+          "roles": {
+            "Grammatical": ["object", "NP-head"],
+            "Semantic": ["possessed"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "poss-ex5",
+      "sourceLanguage": "Korean (HAVE drift)",
+      "translation": "나는 책이 있다. (na-nïn chæk.i iss-da) ('I have a book.' Lit: 'As for me, a book is.')",
+      "notes": "HAVE drift: the possessor na 'I' bears the topic marker -nïn rather than a locative/genitive, having drifted toward the subject/topic role over time. The possessed chæk.i 'book' retains the nominative subject.",
+      "morphemes": [
+        {
+          "id": "m13", "surface": "나는",
+          "segments": [{ "form": "na", "gloss": "1SG" }, { "form": "nïn", "gloss": "TOP" }],
+          "roles": {
+            "Grammatical": ["topic"],
+            "Semantic": ["possessor"]
+          }
+        },
+        {
+          "id": "m14", "surface": "책이",
+          "segments": [{ "form": "chæk", "gloss": "book" }, { "form": "i", "gloss": "NOM" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Semantic": ["possessed"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m15", "surface": "있다",
+          "segments": [{ "form": "iss", "gloss": "EXIST/be" }, { "form": "da", "gloss": "IND" }],
+          "roles": { "Grammatical": ["existential-verb"], "Predication": ["predicate"] }
+        }
+      ]
+    }
+  ]
+}

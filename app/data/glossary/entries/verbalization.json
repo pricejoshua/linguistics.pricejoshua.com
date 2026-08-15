@@ -1,0 +1,56 @@
+{
+  "slug": "verbalization",
+  "title": "Verbalization",
+  "definition": "A derivational process that forms a verb stem from a noun (or other) root — also called a denominal verb formation. Dixon (§11.3) notes verbalization is cross-linguistically less common than [term:nominalization], which correlates with the relative rarity of verbs serving as NP heads. In English, verbalization occurs with both overt affixes (patron → patronize, hospital → hospitalize, liquid → liquidize) and zero-marking (boss → to boss, market → to market, knot → to knot). Dixon argues that zero-derived cases represent distinct lexemes, evidenced by unpredictable meaning shifts and the fact that only some members of a semantic class undergo the process (there is 'to house' but not 'to cottage' or 'to apartment'). More explicit morphological verbalizations are found in many languages; compare also the [term:denominal-strategy] for predication, where a noun takes verbal inflection directly in a predicate slot.",
+  "relatedTerms": ["word-class", "zero-derivation", "nominalization", "denominal-strategy", "predicate"],
+  "examples": [
+    {
+      "id": "vb-ex1",
+      "sourceLanguage": "English",
+      "translation": "They hospitalized him. (overt verbalization: hospital + -ize)",
+      "notes": "Dixon (§11.3 Table 11.3): patron → patronize, hospital → hospitalize, liquid → liquidize. The -ize suffix is the overt allomorph. The corresponding zero-derived pair: boss → to boss (same semantic pattern, zero suffix).",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "They",
+          "segments": [{ "form": "they", "gloss": "3PL.NOM" }],
+          "roles": { "Grammatical": ["subject"], "Semantic": ["agent"] }
+        },
+        {
+          "id": "m2", "surface": "hospitalized",
+          "segments": [
+            { "form": "hospital", "gloss": "hospital.STEM" },
+            { "form": "ize", "gloss": "VERB.SUFF" },
+            { "form": "d", "gloss": "PST" }
+          ],
+          "roles": { "Grammatical": ["predicate", "verb"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m3", "surface": "him",
+          "segments": [{ "form": "him", "gloss": "3SG.M.ACC" }],
+          "roles": { "Grammatical": ["object"], "Semantic": ["patient"] }
+        }
+      ]
+    },
+    {
+      "id": "vb-ex2",
+      "sourceLanguage": "English",
+      "translation": "She bossed everyone around. (zero verbalization: boss → to boss)",
+      "notes": "Dixon (§11.3): 'boss' (verb, zero-derived from noun) means 'act like a boss towards' — compare patron → patronize with overt -ize. Same derivational process, different allomorph (zero). Meaning is predictable here, unlike moon → 'to moon'.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "She",
+          "segments": [{ "form": "she", "gloss": "3SG.F.NOM" }],
+          "roles": { "Grammatical": ["subject"], "Semantic": ["agent"] }
+        },
+        {
+          "id": "m5", "surface": "bossed",
+          "segments": [
+            { "form": "boss", "gloss": "boss.VERB" },
+            { "form": "ed", "gloss": "PST" }
+          ],
+          "roles": { "Grammatical": ["predicate", "verb"], "Predication": ["predicate"] }
+        }
+      ]
+    }
+  ]
+}

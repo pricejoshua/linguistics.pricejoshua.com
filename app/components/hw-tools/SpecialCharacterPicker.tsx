@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface SpecialCharacterPickerProps {
   onInsert: (char: string) => void;
@@ -12,25 +12,59 @@ export interface SpecialCharacterPickerProps {
  * "insert" means via `onInsert`; this component only owns the character
  * set and the open/closed popover state.
  */
-const CHARACTERS = ['α', 'β', 'γ', 'δ', 'ε', 'Ø'];
+const CHARACTERS = [
+  { char: 'α', name: 'alpha' },
+  { char: 'β', name: 'beta' },
+  { char: 'γ', name: 'gamma' },
+  { char: 'δ', name: 'delta' },
+  { char: 'ε', name: 'epsilon' },
+  { char: 'Ø', name: 'null' },
+];
 
-export default function SpecialCharacterPicker({ onInsert, label = 'Special characters' }: SpecialCharacterPickerProps) {
+export default function SpecialCharacterPicker({
+  onInsert,
+  label = 'Insert a special character',
+}: SpecialCharacterPickerProps) {
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // A popover that only closes by clicking its own trigger again is a trap on
+  // a page with four of them; Escape and outside-click are the expected exits.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [open]);
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" ref={rootRef}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label={label}
+        title={label}
         aria-expanded={open}
-        className="px-2 py-1 text-sm rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="btn btn-key"
+        style={open ? { background: 'var(--ditto-wash)', borderColor: 'var(--ditto)', color: 'var(--ditto)' } : undefined}
       >
         α…
       </button>
       {open && (
-        <div className="absolute z-10 mt-1 flex gap-1 p-1 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-md">
-          {CHARACTERS.map((char) => (
+        <div
+          className="absolute z-20 mt-1 flex gap-0.5 p-1 panel"
+          style={{ boxShadow: '0 4px 14px rgb(0 0 0 / 0.18)' }}
+        >
+          {CHARACTERS.map(({ char, name }) => (
             <button
               key={char}
               type="button"
@@ -38,7 +72,10 @@ export default function SpecialCharacterPicker({ onInsert, label = 'Special char
                 onInsert(char);
                 setOpen(false);
               }}
-              className="w-7 h-7 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+              title={name}
+              aria-label={`Insert ${name}`}
+              className="btn btn-key"
+              style={{ border: 'none', background: 'transparent' }}
             >
               {char}
             </button>

@@ -1,0 +1,68 @@
+{
+  "slug": "copula-complement",
+  "title": "Copula Complement",
+  "definition": "The argument of a [term:copula] that specifies what the [term:subject] is, does, or is like — distinct from the [term:predicate] itself. In Dixon's framework, the copula verb is the predicate (it carries tense and links the subject to its complement); the complement is an argument, not a predicate. In 'The river is wide', the copula 'is' is the predicate; 'wide' is the copula complement (CC) — an argument of that predicate alongside the copula subject 'the river'. This is a critical grammatical distinction: calling 'wide' a 'nominal predicate' (a common error Dixon argues against) misidentifies the grammatical relation. In languages without a copula, an NP or adjective may directly head an intransitive predicate — this is a different construction, not the same as copula complement function.",
+  "relatedTerms": ["copula", "predicate", "subject", "verbless-clause", "classification-predicate", "equative-predicate"],
+  "examples": [
+    {
+      "id": "cc-ex1",
+      "sourceLanguage": "English",
+      "translation": "The river is wide. (copula construction)",
+      "notes": "Dixon (§11.1): 'is' is the predicate (carries tense, takes two arguments). 'wide' is copula complement (CC) — an argument of the predicate, not itself a predicate. Compare: 'the river widens' where widen is the intransitive predicate directly.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m2", "surface": "river",
+          "segments": [{ "form": "river", "gloss": "river" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m3", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m4", "surface": "wide",
+          "segments": [{ "form": "wide", "gloss": "wide" }],
+          "roles": {
+            "Grammatical": ["copula-complement"],
+            "Semantic": ["property"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cc-ex2",
+      "sourceLanguage": "English",
+      "translation": "The river widens below the waterfall. (intransitive predicate — no copula)",
+      "notes": "Contrast: 'widen' is a derived intransitive verb heading the predicate directly. There is no copula and no copula complement. 'widen' = adjective 'wide' + suffix -en. 'narrow' lacks -en so the parallel is 'the river narrows' (intransitive predicate) vs. 'the river is narrow' (copula + CC).",
+      "morphemes": [
+        {
+          "id": "m5", "surface": "The",
+          "segments": [{ "form": "the", "gloss": "DEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m6", "surface": "river",
+          "segments": [{ "form": "river", "gloss": "river" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m7", "surface": "widens",
+          "segments": [{ "form": "widen", "gloss": "INTR.PRS.3SG" }],
+          "roles": { "Grammatical": ["predicate", "verb"], "Predication": ["predicate"] }
+        }
+      ]
+    }
+  ]
+}

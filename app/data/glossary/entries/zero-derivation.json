@@ -1,0 +1,65 @@
+{
+  "slug": "zero-derivation",
+  "title": "Zero Derivation",
+  "definition": "A word-class-changing derivational process whose marking is phonologically null (zero), rather than shown by an affix. Dixon (§11.3) argues that what looks like a single lexeme freely used as noun or verb in English is actually two distinct lexemes related by zero derivation — the semantic shift between the noun and derived verb (or verb and derived noun) is evidence that derivation has occurred, even without visible morphology. The key diagnostic is *unpredictable meaning*: if the 'verbal' use of a noun has an idiosyncratic meaning not predictable from the noun (e.g. English 'moon' as verb meaning 'idle about', not 'be the moon'), it is a derived lexeme. Zero derivation contrasts with *multifunctionality* (scheme II/IV), where the same lexeme with the same meaning fills either slot — as in Fijian, where 'chief' as predicate head means simply 'is a chief'.",
+  "relatedTerms": ["word-class", "nominalization", "verbalization", "denominal-strategy", "copula-complement"],
+  "examples": [
+    {
+      "id": "zd-ex1",
+      "sourceLanguage": "English",
+      "translation": "She mothered him. (verb derived from noun 'mother' — zero derivation)",
+      "notes": "Dixon (§11.3): 'mother' (noun) and 'mother' (verb) are two lexemes. The verb means 'treat X as a mother would' — not predictable from the noun meaning. Compare: patron → patronize (overt suffix -ize); boss → boss (zero derivation, same semantic pattern). The zero suffix is one allomorph among others.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "She",
+          "segments": [{ "form": "she", "gloss": "3SG.F.NOM" }],
+          "roles": { "Grammatical": ["subject"], "Semantic": ["agent"] }
+        },
+        {
+          "id": "m2", "surface": "mothered",
+          "segments": [
+            { "form": "mother", "gloss": "mother.VERB" },
+            { "form": "ed", "gloss": "PST" }
+          ],
+          "roles": { "Grammatical": ["predicate", "verb"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m3", "surface": "him",
+          "segments": [{ "form": "him", "gloss": "3SG.M.ACC" }],
+          "roles": { "Grammatical": ["object"], "Semantic": ["patient"] }
+        }
+      ]
+    },
+    {
+      "id": "zd-ex2",
+      "sourceLanguage": "English",
+      "translation": "She is a mother. (noun 'mother' in copula complement — NOT zero derivation)",
+      "notes": "Here 'mother' is a noun in copula complement (CC) function — not a predicate. The copula 'is' is the predicate. This is a copula construction, not a case of the noun directly heading a predicate.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "She",
+          "segments": [{ "form": "she", "gloss": "3SG.F.NOM" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m5", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["predicate"] }
+        },
+        {
+          "id": "m6", "surface": "a",
+          "segments": [{ "form": "a", "gloss": "INDEF" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m7", "surface": "mother",
+          "segments": [{ "form": "mother", "gloss": "mother" }],
+          "roles": { "Grammatical": ["copula-complement", "NP-head"] }
+        }
+      ]
+    }
+  ]
+}

@@ -39,131 +39,184 @@ export default function SlotZoneEditor({ label, slots, onChange }: SlotZoneEdito
   };
 
   return (
-    <div className="space-y-2">
-      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{label}</div>
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="panel p-3">
+      <div className="u-label mb-2">{label}</div>
+
+      <div className="flex flex-wrap items-center gap-1">
         {QUICK_INSERT.map((sym) => (
           <button
             key={sym}
             type="button"
             onClick={() => addTextSlot(sym)}
-            className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+            title={`Add ${sym}`}
+            className="btn btn-key"
           >
             {sym}
           </button>
         ))}
-        <button
-          type="button"
-          onClick={() => addTextSlot('')}
-          className="px-3 py-1 rounded bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800"
-        >
+        <SpecialCharacterPicker onInsert={(char) => addTextSlot(char)} />
+        <span className="w-px self-stretch mx-1" style={{ background: 'var(--line)' }} aria-hidden="true" />
+        <button type="button" onClick={() => addTextSlot('')} className="btn btn-quiet">
           + Symbol
         </button>
-        <button
-          type="button"
-          onClick={addMatrixSlot}
-          className="px-3 py-1 rounded bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800"
-        >
-          + Feature matrix
+        <button type="button" onClick={addMatrixSlot} className="btn btn-quiet">
+          + Matrix
         </button>
-        <SpecialCharacterPicker onInsert={(char) => addTextSlot(char)} />
       </div>
 
-      <ul className="space-y-2">
-        {slots.map((slot, i) => (
-          <li
-            key={i}
-            className="flex items-center gap-2 border border-gray-200 dark:border-gray-800 rounded p-2"
-          >
-            {slot.kind === 'text' ? (
-              <>
-                <input
-                  type="text"
-                  value={slot.value}
-                  onChange={(e) => updateSlot(i, { ...slot, value: e.target.value })}
-                  className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 w-20"
-                />
-                <button
-                  type="button"
-                  onClick={() => attachMatrix(i, slot.value)}
-                  title="Add a feature matrix under this symbol"
-                  className="text-sm text-blue-600 dark:text-blue-400"
-                >
-                  + matrix
-                </button>
-              </>
-            ) : (
-              <div className="flex flex-col gap-1">
-                {slot.symbol !== undefined && (
-                  <input
-                    type="text"
-                    value={slot.symbol}
-                    onChange={(e) => updateSlot(i, { ...slot, symbol: e.target.value })}
-                    placeholder="(no symbol)"
-                    className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 w-20 text-xs"
-                  />
-                )}
-                {slot.values.map((v, j) => (
-                  <div key={j} className="flex items-center gap-1">
+      {slots.length === 0 ? (
+        /* An empty zone is a legal answer, and the buttons above are already
+           the invitation — so this stays terse. The long version appeared in
+           all four zones at once and read as noise. */
+        <p className="u-note mt-2.5">Empty</p>
+      ) : (
+        /*
+          Horizontal, because slot order IS the notation's left-to-right order
+          — the same order the "move left / move right" buttons change. Stacked
+          vertically, the editor contradicted its own model.
+        */
+        <ul className="mt-2.5 flex flex-wrap items-start gap-1.5">
+          {slots.map((slot, i) => (
+            <li
+              key={i}
+              className="flex flex-col gap-1 p-1.5 rounded-[3px]"
+              style={{ border: '1px solid var(--line)', background: 'var(--bench-sunk)' }}
+            >
+              <div className="min-w-0">
+                {slot.kind === 'text' ? (
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <input
                       type="text"
-                      value={v}
-                      onChange={(e) => {
-                        const values = [...slot.values];
-                        values[j] = e.target.value;
-                        updateSlot(i, { ...slot, values });
-                      }}
-                      className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 w-24"
-                    />
-                    <SpecialCharacterPicker
-                      label="Insert variable"
-                      onInsert={(char) => {
-                        const values = [...slot.values];
-                        // Variable-first convention: "α voice", not "voice α".
-                        values[j] = `${char} ${values[j]}`.trim();
-                        updateSlot(i, { ...slot, values });
-                      }}
+                      value={slot.value}
+                      onChange={(e) => updateSlot(i, { ...slot, value: e.target.value })}
+                      aria-label={`${label} symbol ${i + 1}`}
+                      placeholder="symbol"
+                      className="field w-20"
                     />
                     <button
                       type="button"
-                      onClick={() => updateSlot(i, { ...slot, values: slot.values.filter((_, k) => k !== j) })}
-                      aria-label="Remove feature line"
-                      className="text-sm text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                      onClick={() => attachMatrix(i, slot.value)}
+                      title="Add a feature matrix under this symbol"
+                      className="btn btn-quiet text-[0.75rem]"
                     >
-                      ✕
+                      + matrix
                     </button>
                   </div>
-                ))}
+                ) : (
+                  <div className="flex flex-col gap-1.5">
+                    {slot.symbol !== undefined && (
+                      <input
+                        type="text"
+                        value={slot.symbol}
+                        onChange={(e) => updateSlot(i, { ...slot, symbol: e.target.value })}
+                        placeholder="no symbol"
+                        aria-label={`${label} matrix ${i + 1} symbol`}
+                        className="field w-20 text-[0.8125rem]"
+                      />
+                    )}
+                    {/* Bracket walls — the matrix reads as [ … ] while you edit it, not as a plain list of inputs. */}
+                    <div className="matrix-bracket flex flex-col gap-1 py-1">
+                      {slot.values.map((v, j) => (
+                        <div key={j} className="flex items-center gap-1">
+                          <input
+                            type="text"
+                            value={v}
+                            onChange={(e) => {
+                              const values = [...slot.values];
+                              values[j] = e.target.value;
+                              updateSlot(i, { ...slot, values });
+                            }}
+                            aria-label={`${label} matrix ${i + 1} feature ${j + 1}`}
+                            placeholder="+voice"
+                            className="field w-28"
+                          />
+                          <SpecialCharacterPicker
+                            label="Insert a variable"
+                            onInsert={(char) => {
+                              const values = [...slot.values];
+                              // Variable-first convention: "α voice", not "voice α".
+                              values[j] = `${char} ${values[j]}`.trim();
+                              updateSlot(i, { ...slot, values });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => updateSlot(i, { ...slot, values: slot.values.filter((_, k) => k !== j) })}
+                            aria-label={`Remove feature ${j + 1}`}
+                            title="Remove this feature"
+                            className="btn btn-quiet btn-danger"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updateSlot(i, { ...slot, values: [...slot.values, ''] })}
+                      className="btn btn-quiet self-start text-[0.75rem]"
+                    >
+                      + Feature
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Tools sit under their own slot rather than flush-right in the
+                  panel, where a wide zone left them stranded far from the
+                  content they act on. */}
+              <div
+                className="flex items-center justify-center gap-0.5 pt-1"
+                style={{ borderTop: '1px solid var(--line)' }}
+              >
                 <button
                   type="button"
-                  onClick={() => updateSlot(i, { ...slot, values: [...slot.values, ''] })}
-                  className="text-sm text-blue-600 dark:text-blue-400 text-left"
+                  onClick={() => toggleOptional(i, slot)}
+                  aria-pressed={slot.optional}
+                  aria-label="Optional"
+                  title={slot.optional ? 'Optional — remove the parentheses' : 'Mark optional — wrap in parentheses'}
+                  className="btn btn-quiet u-notation"
+                  style={{
+                    color: slot.optional ? 'var(--ditto)' : 'var(--ink-faint)',
+                    background: slot.optional ? 'var(--ditto-wash)' : undefined,
+                  }}
                 >
-                  + feature line
+                  ( )
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveSlot(i, -1)}
+                  disabled={i === 0}
+                  aria-label="Move left"
+                  title="Move left"
+                  className="btn btn-quiet"
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveSlot(i, 1)}
+                  disabled={i === slots.length - 1}
+                  aria-label="Move right"
+                  title="Move right"
+                  className="btn btn-quiet"
+                >
+                  →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeSlot(i)}
+                  aria-label="Remove"
+                  title="Remove"
+                  className="btn btn-quiet btn-danger"
+                >
+                  ✕
                 </button>
               </div>
-            )}
-            <button
-              type="button"
-              onClick={() => toggleOptional(i, slot)}
-              aria-pressed={slot.optional}
-              title="Toggle optional (parentheses)"
-              className={`text-sm px-1 rounded ${slot.optional ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-400 dark:text-gray-500'}`}
-            >
-              ( )
-            </button>
-            <button type="button" onClick={() => moveSlot(i, -1)} aria-label="Move left">
-              ←
-            </button>
-            <button type="button" onClick={() => moveSlot(i, 1)} aria-label="Move right">
-              →
-            </button>
-            <button type="button" onClick={() => removeSlot(i)} aria-label="Remove slot">
-              ✕
-            </button>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

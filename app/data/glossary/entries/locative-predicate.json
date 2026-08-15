@@ -1,0 +1,132 @@
+{
+  "slug": "locative-predicate",
+  "title": "Locative Predicate",
+  "definition": "A [term:predicate] that expresses the location of a referent. Locative predicates often use the same construction as [term:classification-predicate]s or [term:existential-predicate]s, but the predicate phrase is a locative expression (prepositional phrase, locative-case NP, or locative adverb) rather than a noun or adjective. Many languages extend the same construction to other semantic roles such as benefactive and accompaniment.",
+  "relatedTerms": ["existential-predicate", "copula", "verbless-clause", "predicate", "classification-predicate"],
+  "examples": [
+    {
+      "id": "loc-ex1",
+      "sourceLanguage": "English",
+      "translation": "The cat is under the bed.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "The cat",
+          "segments": [{ "form": "the cat", "gloss": "DEF cat" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m3", "surface": "under the bed",
+          "segments": [{ "form": "under the bed", "gloss": "under DEF bed" }],
+          "roles": {
+            "Grammatical": ["predicate", "PP"],
+            "Semantic": ["location"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-ex2",
+      "sourceLanguage": "Estonian",
+      "translation": "Raamat on laual. ('The book is on the table.')",
+      "notes": "The locative case suffix -l on laual 'table' encodes the location directly on the noun; the copula on appears.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "Raamat",
+          "segments": [{ "form": "raamat", "gloss": "book.NOM" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m5", "surface": "on",
+          "segments": [{ "form": "ole", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m6", "surface": "laual",
+          "segments": [{ "form": "laud", "gloss": "table" }, { "form": "l", "gloss": "LOC" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Semantic": ["location"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-ex3",
+      "sourceLanguage": "Mandarin Chinese",
+      "translation": "書在桌子上。(shū zài zhuōzi shàng) ('The book is on the table.')",
+      "notes": "Mandarin uses the locative copula zài 'be.at' rather than the classificatory shì 'be'. The postposition shàng 'on' follows the NP.",
+      "morphemes": [
+        {
+          "id": "m7", "surface": "書",
+          "segments": [{ "form": "shū", "gloss": "book" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m8", "surface": "在",
+          "segments": [{ "form": "zài", "gloss": "COP.LOC" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m9", "surface": "桌子",
+          "segments": [{ "form": "zhuōzi", "gloss": "table" }],
+          "roles": { "Grammatical": ["NP-head"] }
+        },
+        {
+          "id": "m10", "surface": "上",
+          "segments": [{ "form": "shàng", "gloss": "on" }],
+          "roles": {
+            "Grammatical": ["predicate", "postposition"],
+            "Semantic": ["location"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-ex4",
+      "sourceLanguage": "Estonian",
+      "translation": "See kiri on Jan-ile. ('This letter is for John.')",
+      "notes": "The same locative-copula construction extends to benefactive ('for') — illustrating the broader function of locative predicate constructions.",
+      "morphemes": [
+        {
+          "id": "m11", "surface": "See kiri",
+          "segments": [{ "form": "see kiri", "gloss": "this letter.NOM" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m12", "surface": "on",
+          "segments": [{ "form": "ole", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m13", "surface": "Jan-ile",
+          "segments": [{ "form": "Jan", "gloss": "Jan" }, { "form": "ile", "gloss": "ALL/BEN" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-head"],
+            "Semantic": ["beneficiary"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    }
+  ]
+}

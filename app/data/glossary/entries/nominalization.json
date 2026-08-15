@@ -1,0 +1,56 @@
+{
+  "slug": "nominalization",
+  "title": "Nominalization",
+  "definition": "A derivational process that forms a noun stem from a verb (or other) root. Dixon (§11.3) notes that nominalization is cross-linguistically more common than verbalization, which correlates with the fact that verbs functioning as NP heads is rarer than nouns functioning as predicate heads — when something unusual happens in syntax, the language tends to have an explicit morphological strategy for it. Nominalizations can derive: the agent of an action (Tagalog *taga-sulat* 'writer' ← *sulat* 'write'), the instrument (Fijian *i-cula* 'needle' ← *cula* 'pierce'), the place (*i-moce-moce* 'bed' ← *moce* 'sleep'), or the activity itself as an abstract noun. Nominalizations differ from [term:zero-derivation] in that the derivation is morphologically marked. They also differ from simple NP-headedness (scheme III/IV), where the verb itself — without derivation — fills the NP slot.",
+  "relatedTerms": ["word-class", "zero-derivation", "verbalization", "predicate", "denominal-strategy"],
+  "examples": [
+    {
+      "id": "nom-ex1",
+      "sourceLanguage": "English",
+      "translation": "observation (nominalization of 'observe')",
+      "notes": "Dixon (§11.3 Table 11.4): observe → observation (suffix -ion); also observe → observer (suffix -er). These are nominalizations with overt marking. The corresponding zero-derived pair would be 'concern' (verb) → 'concern' (noun, zero suffix).",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "observ-ation",
+          "segments": [
+            { "form": "observ", "gloss": "observe.STEM" },
+            { "form": "ation", "gloss": "NOM.SUFF" }
+          ],
+          "roles": { "Grammatical": ["NP-head", "nominalization"] }
+        }
+      ]
+    },
+    {
+      "id": "nom-ex2",
+      "sourceLanguage": "Tagalog",
+      "translation": "taga-sulat ('writer' ← sulat 'write')",
+      "notes": "Dixon (§11.8): Tagalog prefix taga- added to verb root creates an agentive noun 'the person employed to perform the action'. A morphologically explicit nominalization.",
+      "morphemes": [
+        {
+          "id": "m2", "surface": "taga-sulat",
+          "segments": [
+            { "form": "taga", "gloss": "AGENT.NMLZ" },
+            { "form": "sulat", "gloss": "write" }
+          ],
+          "roles": { "Grammatical": ["NP-head", "nominalization"] }
+        }
+      ]
+    },
+    {
+      "id": "nom-ex3",
+      "sourceLanguage": "Fijian",
+      "translation": "i-cula ('needle' ← cula 'pierce')",
+      "notes": "Dixon (§11.8): Fijian prefix i- derives instrument nouns from verb roots. Also: i-vola 'letter/book' ← vola 'write'; i-moce-moce 'bed' ← moce 'sleep' (with reduplication).",
+      "morphemes": [
+        {
+          "id": "m3", "surface": "i-cula",
+          "segments": [
+            { "form": "i", "gloss": "INSTR.NMLZ" },
+            { "form": "cula", "gloss": "pierce" }
+          ],
+          "roles": { "Grammatical": ["NP-head", "nominalization"] }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "slug": "descriptive-predicate",
+  "title": "Descriptive Predicate",
+  "definition": "A [term:predicate] that attributes a property or quality to a referent — also called a predicative adjective construction. The predicate head is an adjective (or adjective-like word) rather than a noun. Descriptive predicates are crosslinguistically distinct from [term:classification-predicate]s: some languages use different [term:copula]s (Spanish ser vs. estar), different morphology, or different word-class assignments for the two functions. In some languages adjectives pattern like verbs and head predicates directly; in others they require a copula.",
+  "relatedTerms": ["classification-predicate", "copula", "verbless-clause", "predicate", "word-class"],
+  "examples": [
+    {
+      "id": "desc-ex1",
+      "sourceLanguage": "English",
+      "translation": "Rick is patient.",
+      "notes": "Adjective-headed predicate with copula. Compare classification: 'Rick is a pacifist' (NP predicate).",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "Rick",
+          "segments": [{ "form": "Rick", "gloss": "Rick" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m2", "surface": "is",
+          "segments": [{ "form": "be", "gloss": "COP.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m3", "surface": "patient",
+          "segments": [{ "form": "patient", "gloss": "patient" }],
+          "roles": {
+            "Grammatical": ["predicate", "adjective"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "desc-ex2",
+      "sourceLanguage": "Spanish",
+      "translation": "Ofelia está enferma. ('Ofelia is sick.')",
+      "notes": "Spanish uses estar (not ser) for descriptive/stative predicates. *Ofelia es enferma is ungrammatical — ser is reserved for classification.",
+      "morphemes": [
+        {
+          "id": "m4", "surface": "Ofelia",
+          "segments": [{ "form": "Ofelia", "gloss": "Ofelia" }],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m5", "surface": "está",
+          "segments": [{ "form": "estar", "gloss": "COP.STAT.PRS.3SG" }],
+          "roles": { "Grammatical": ["copula"], "Predication": ["copula"] }
+        },
+        {
+          "id": "m6", "surface": "enferma",
+          "segments": [{ "form": "enferm", "gloss": "sick" }, { "form": "a", "gloss": "F.SG" }],
+          "roles": {
+            "Grammatical": ["predicate", "adjective"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "desc-ex3",
+      "sourceLanguage": "Amele",
+      "translation": "uqa me bil-i-a ('He is good.')",
+      "notes": "The adjective me 'good' is followed by the stative verb bil 'sit/be', which functions as a light verb predicate head. The adjective itself does not inflect.",
+      "morphemes": [
+        {
+          "id": "m7", "surface": "uqa",
+          "segments": [{ "form": "uqa", "gloss": "3SG.M" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m8", "surface": "me",
+          "segments": [{ "form": "me", "gloss": "good" }],
+          "roles": {
+            "Grammatical": ["predicate", "adjective"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m9", "surface": "bil-i-a",
+          "segments": [
+            { "form": "bil", "gloss": "sit/be" },
+            { "form": "i", "gloss": "3SG" },
+            { "form": "a", "gloss": "PRS" }
+          ],
+          "roles": { "Grammatical": ["verb"], "Predication": ["copula"] }
+        }
+      ]
+    },
+    {
+      "id": "desc-ex4",
+      "sourceLanguage": "Classical Nahuatl",
+      "translation": "ni-cualli ('I am good.')",
+      "notes": "Denominal/deadjectival strategy: the adjective cualli 'good' takes a subject prefix directly, with no copula. The adjective functions as a predicate verb.",
+      "morphemes": [
+        {
+          "id": "m10", "surface": "ni-cualli",
+          "segments": [
+            { "form": "ni", "gloss": "1SG" },
+            { "form": "cualli", "gloss": "good" }
+          ],
+          "roles": {
+            "Grammatical": ["predicate"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "desc-ex5",
+      "sourceLanguage": "Hamer (Ethiopia)",
+      "translation": "ya kati pakala-ne ('You are very clever.')",
+      "notes": "Predicative marking strategy: the suffix -ne marks the adjective pakala as a predicate, parallel to its use on nouns in classification predicates.",
+      "morphemes": [
+        {
+          "id": "m11", "surface": "ya",
+          "segments": [{ "form": "ya", "gloss": "2SG" }],
+          "roles": {
+            "Grammatical": ["subject"],
+            "Predication": ["subject-of-predication"]
+          }
+        },
+        {
+          "id": "m12", "surface": "kati",
+          "segments": [{ "form": "kati", "gloss": "very" }],
+          "roles": { "Grammatical": ["adverb"] }
+        },
+        {
+          "id": "m13", "surface": "pakala-ne",
+          "segments": [{ "form": "pakala", "gloss": "clever" }, { "form": "ne", "gloss": "PRED" }],
+          "roles": {
+            "Grammatical": ["predicate", "adjective"],
+            "Semantic": ["property"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -104,7 +104,14 @@ const LinkedFeatureTrees = forwardRef<SVGSVGElement, LinkedFeatureTreesProps>(fu
       height={combinedBottom - combinedTop}
       role="img"
       aria-label={label}
-      className="text-gray-900 dark:text-gray-100"
+      // `color` is set as a presentation ATTRIBUTE, not a class, so it
+      // survives XMLSerializer in svgExport.ts. Everything below draws with
+      // `currentColor`; in a serialized standalone SVG there is no stylesheet,
+      // so a themed class (previously `dark:text-gray-100`) left currentColor
+      // falling back to black at export time while the screen showed near-white
+      // — the dark-mode preview did not match what got pasted into Word.
+      // Pinning it here makes preview and export the same ink.
+      color="#14131a"
     >
       {positioned.map(({ tree, layout, visibleNodes, offsetX }) => {
         const root = visibleNodes.find((n) => n.parent === null);

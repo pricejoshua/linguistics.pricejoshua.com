@@ -1,0 +1,64 @@
+{
+  "slug": "omnipredicative",
+  "title": "Omnipredicative",
+  "definition": "Launey's (1994) term for a language in which any lexeme — regardless of word class — can function as head of a predicate. Dixon (§11.2 note) coins this from work on Classical Nahuatl, where nouns and verbs alike can head predicates. Dixon cautions that this label can obscure the fact that different word classes typically show different structural and inflectional possibilities even when both are in predicate-head position. An omnipredicative language will generally show scheme II (if only nouns can also be predicate heads, not verbs as NP heads) or scheme IV (full bidirectionality). The label applies to the language-level typological property, not to individual lexemes.",
+  "relatedTerms": ["word-class", "predicate", "denominal-strategy", "copula-complement", "verbless-clause"],
+  "examples": [
+    {
+      "id": "omni-ex1",
+      "sourceLanguage": "Classical Nahuatl",
+      "translation": "ni-tiːcitl ('I am a midwife' — noun heading predicate, scheme II)",
+      "notes": "Classical Nahuatl is omnipredicative (Launey 1994): the noun tiːcitl 'midwife' takes the verbal subject prefix ni- '1SG' directly, heading an intransitive predicate without a copula. This is also an instance of the denominal strategy.",
+      "morphemes": [
+        {
+          "id": "m1", "surface": "ni-tiːcitl",
+          "segments": [
+            { "form": "ni", "gloss": "1SG" },
+            { "form": "tiːcitl", "gloss": "midwife" }
+          ],
+          "roles": {
+            "Grammatical": ["predicate", "NP-as-predicate"],
+            "Predication": ["predicate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "omni-ex2",
+      "sourceLanguage": "Fijian",
+      "translation": "e tuuraga a tama-qu ('My father is a chief')",
+      "notes": "Dixon (§11.3): Fijian noun tuuraga 'chief' heads an intransitive predicate with the 3SG subject marker e— the same marker used with verb dredre 'laugh'. In Fijian, every noun may be predicate head with identical TAM marking to verbs; this is the prototypical omnipredicative pattern. There is no copula construction — the NP directly heads the predicate.",
+      "morphemes": [
+        {
+          "id": "m2", "surface": "e",
+          "segments": [{ "form": "e", "gloss": "3SG" }],
+          "roles": { "Grammatical": ["agreement-marker"] }
+        },
+        {
+          "id": "m3", "surface": "tuuraga",
+          "segments": [{ "form": "tuuraga", "gloss": "chief" }],
+          "roles": {
+            "Grammatical": ["predicate", "NP-as-predicate"],
+            "Predication": ["predicate"]
+          }
+        },
+        {
+          "id": "m4", "surface": "a",
+          "segments": [{ "form": "a", "gloss": "ART" }],
+          "roles": { "Grammatical": ["determiner"] }
+        },
+        {
+          "id": "m5", "surface": "tama-qu",
+          "segments": [
+            { "form": "tama", "gloss": "father" },
+            { "form": "qu", "gloss": "1SG.POSS" }
+          ],
+          "roles": {
+            "Grammatical": ["subject", "NP-head"],
+            "Predication": ["subject-of-predication"]
+          }
+        }
+      ]
+    }
+  ]
+}
